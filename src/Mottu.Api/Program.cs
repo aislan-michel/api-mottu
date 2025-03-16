@@ -1,18 +1,13 @@
-using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Notifications;
-using Mottu.Api.Infrastructure.Repositories;
-using Mottu.Api.Infrastructure.Repositories.GenericRepository;
-using Mottu.Api.UseCases.MotorcycleUseCases;
+using Mottu.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
-
-builder.Services.AddScoped<IRepository<Motorcycle>, Repository<Motorcycle>>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddSwagger();
+builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 
