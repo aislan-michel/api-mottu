@@ -32,8 +32,9 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         var motorcycle = new Motorcycle(id, request.Year, request.Model, request.Plate);
 
         _repository.Save(motorcycle);
-    }
 
+        //todo: produces event
+    }
     
 	private void Validate(PostMotorcycleRequest request)
 	{
@@ -51,6 +52,11 @@ public class MotorcycleUseCase : IMotorcycleUseCase
 		{
 			_notificationService.Add(BuildRequestNotification("Placa não pode ser nulo ou vazio"));
 		}
+
+        if(_repository.Exists(x => x.Plate == request.Plate))
+        {
+            _notificationService.Add(BuildRequestNotification($"Moto com a placa {request.Plate} já cadastrada"));
+        }
 	}
 
     private Notification BuildRequestNotification(string message)
