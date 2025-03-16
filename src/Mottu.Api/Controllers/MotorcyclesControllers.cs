@@ -23,6 +23,7 @@ public class MotorcyclesController : ApiControllerBase
 		_logger = logger;
 	}
 
+	[HttpPost]
 	public IActionResult Post(PostMotorcycleRequest request)
 	{
 		try

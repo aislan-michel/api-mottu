@@ -2,12 +2,7 @@ namespace Mottu.Api.Infrastructure.Notifications;
 
 public class NotificationService : INotificationService
 {
-    private readonly List<Notification> _notifications;
-
-    public NotificationService(List<Notification> notifications)
-    {
-        _notifications = notifications;
-    }
+    private readonly List<Notification> _notifications = [];
 
     public List<Notification> Get()
     {
