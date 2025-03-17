@@ -62,4 +62,25 @@ public class MotorcyclesController : ApiControllerBase
 			return InternalServerError();
 		}
 	}
+
+	[HttpPatch]
+	public IActionResult Patch([FromRoute] int id, [FromBody] PatchMotorcycleRequest request)
+	{
+		try
+		{
+			_useCase.Update(id, request);
+
+			if(_notificationService.HaveNotifications())
+			{
+				return BadRequest("Dados inválidos", _notificationService.GetMessages());
+			}
+
+			return Ok();
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+	}
 }

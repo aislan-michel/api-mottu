@@ -14,4 +14,9 @@ public class Motorcycle
     public int Year { get; private set; }
 	public string Model { get; private set; }
 	public string Plate { get; private set; }
+
+    public void UpdatePlate(string plate)
+    {
+        Plate = plate;
+    }
 }

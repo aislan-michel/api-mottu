@@ -13,18 +13,30 @@ public class Repository<Motorcycle> : IRepository<Motorcycle>
         return Motorcycles.Exists(condition);
     }
 
-    public IEnumerable<Motorcycle> Get(Func<Motorcycle, bool>? whereCondition = null)
+    public Motorcycle GetFirst(Func<Motorcycle, bool> whereCondition)
     {
         if(whereCondition == null)
         {
-            return Motorcycles;
+            throw new ArgumentNullException(nameof(whereCondition), "Condição para pegar o primeiro item não pode ser nulo");
         }
 
-        return Motorcycles.Where(whereCondition);
+        return Motorcycles.First(whereCondition);
+    }
+
+    public IEnumerable<Motorcycle> GetCollection(Func<Motorcycle, bool>? whereCondition = null)
+    {
+        return whereCondition == null ? Motorcycles : Motorcycles.Where(whereCondition);
     }
 
     public void Save(Motorcycle motorcycle)
     {
+        Motorcycles.Add(motorcycle);
+    }
+
+    public void Update(Motorcycle motorcycle)
+    {
+        Motorcycles.Remove(motorcycle);
+
         Motorcycles.Add(motorcycle);
     }
 }
