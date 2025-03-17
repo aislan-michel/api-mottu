@@ -40,7 +40,23 @@ public class MotorcyclesController : ApiControllerBase
 				detail: _notificationService.GetMessages()
 			);
 		}
-		catch (Exception e)
+		catch(Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+	}
+
+	[HttpGet]
+	public IActionResult Get([FromQuery] string plate)
+	{
+		try
+		{
+			var motorcycles = _useCase.Get(plate);
+
+			return Ok(motorcycles);
+		}
+		catch(Exception e)
 		{
 			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
 			return InternalServerError();

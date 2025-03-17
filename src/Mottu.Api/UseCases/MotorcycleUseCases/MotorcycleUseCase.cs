@@ -1,3 +1,4 @@
+
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Notifications;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
@@ -38,29 +39,33 @@ public class MotorcycleUseCase : IMotorcycleUseCase
     
 	private void Validate(PostMotorcycleRequest request)
 	{
+        const string key = nameof(PostMotorcycleRequest);
+
 		if(request.Year <= 0)
 		{
-			_notificationService.Add(BuildRequestNotification("Ano da moto menor ou igual a zero"));
+			_notificationService.Add(new Notification(key, "Ano da moto menor ou igual a zero"));
 		}
 
 		if(string.IsNullOrWhiteSpace(request.Model))
 		{
-			_notificationService.Add(BuildRequestNotification("Modelo não pode ser nulo ou vazio"));
+			_notificationService.Add(new Notification(key, "Modelo não pode ser nulo ou vazio"));
 		}
 
 		if(string.IsNullOrWhiteSpace(request.Plate))
 		{
-			_notificationService.Add(BuildRequestNotification("Placa não pode ser nulo ou vazio"));
+			_notificationService.Add(new Notification(key, "Placa não pode ser nulo ou vazio"));
 		}
 
         if(_repository.Exists(x => x.Plate == request.Plate))
         {
-            _notificationService.Add(BuildRequestNotification($"Moto com a placa {request.Plate} já cadastrada"));
+            _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
         }
 	}
 
-    private Notification BuildRequestNotification(string message)
+    public IEnumerable<GetMotorcycleResponse> Get(string plate)
     {
-        return new Notification(nameof(PostMotorcycleRequest), message);
+        return _repository
+            .Get(string.IsNullOrWhiteSpace(plate) ? null : x => x.Plate == plate)
+            .Select(x => new GetMotorcycleResponse(x.Id, x.Year, x.Model, x.Plate));
     }
 }

@@ -6,4 +6,5 @@ namespace Mottu.Api.UseCases.MotorcycleUseCases;
 public interface IMotorcycleUseCase
 {
     void Create(PostMotorcycleRequest request);
+    IEnumerable<GetMotorcycleResponse> Get(string plate);
 }
