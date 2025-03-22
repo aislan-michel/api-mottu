@@ -1,4 +1,3 @@
-
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Notifications;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
@@ -32,7 +31,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
 
         var motorcycle = new Motorcycle(id, request.Year, request.Model, request.Plate);
 
-        _repository.Save(motorcycle);
+        _repository.Create(motorcycle);
 
         //todo: produces event
     }
@@ -104,5 +103,17 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         {
             _notificationService.Add(new Notification(key, "Placa não pode ser nulo ou vazio"));
         }
+    }
+
+    public void Delete(int id)
+    {
+        if(id <= 0)
+        {
+            _notificationService.Add(new Notification("", "Id não pode ser menor ou igual a zero"));
+        }
+
+        var motorcycle = _repository.GetFirst(x => x.Id == id);
+
+        _repository.Delete(motorcycle);
     }
 }

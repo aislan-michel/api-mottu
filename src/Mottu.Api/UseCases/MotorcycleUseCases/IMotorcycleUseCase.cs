@@ -8,4 +8,5 @@ public interface IMotorcycleUseCase
     void Create(PostMotorcycleRequest request);
     IEnumerable<GetMotorcycleResponse> Get(string plate);
     void Update(int id, PatchMotorcycleRequest request);
+    void Delete(int id);
 }

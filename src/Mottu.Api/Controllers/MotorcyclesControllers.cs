@@ -30,7 +30,7 @@ public class MotorcyclesController : ApiControllerBase
 		{
 			_useCase.Create(request);
 
-			if(!_notificationService.HaveNotifications())
+			if (!_notificationService.HaveNotifications())
 			{
 				return Created();
 			}
@@ -40,7 +40,7 @@ public class MotorcyclesController : ApiControllerBase
 				detail: _notificationService.GetMessages()
 			);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
 			return InternalServerError();
@@ -56,7 +56,7 @@ public class MotorcyclesController : ApiControllerBase
 
 			return Ok(motorcycles);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
 			return InternalServerError();
@@ -70,9 +70,30 @@ public class MotorcyclesController : ApiControllerBase
 		{
 			_useCase.Update(id, request);
 
-			if(_notificationService.HaveNotifications())
+			if (_notificationService.HaveNotifications())
 			{
 				return BadRequest("Dados inválidos", _notificationService.GetMessages());
+			}
+
+			return Ok();
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+	}
+
+	[HttpDelete]
+	public IActionResult Delete([FromRoute] int id)
+	{
+		try
+		{
+			_useCase.Delete(id);
+
+			if (_notificationService.HaveNotifications())
+			{
+				return BadRequest("Dados Inválidos", _notificationService.GetMessages());
 			}
 
 			return Ok();

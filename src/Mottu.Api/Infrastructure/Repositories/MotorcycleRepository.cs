@@ -1,5 +1,3 @@
-
-
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 
 namespace Mottu.Api.Infrastructure.Repositories;
@@ -28,7 +26,7 @@ public class Repository<Motorcycle> : IRepository<Motorcycle>
         return whereCondition == null ? Motorcycles : Motorcycles.Where(whereCondition);
     }
 
-    public void Save(Motorcycle motorcycle)
+    public void Create(Motorcycle motorcycle)
     {
         Motorcycles.Add(motorcycle);
     }
@@ -38,5 +36,10 @@ public class Repository<Motorcycle> : IRepository<Motorcycle>
         Motorcycles.Remove(motorcycle);
 
         Motorcycles.Add(motorcycle);
+    }
+
+    public void Delete(Motorcycle motorcycle)
+    {
+        Motorcycles.Remove(motorcycle);
     }
 }
