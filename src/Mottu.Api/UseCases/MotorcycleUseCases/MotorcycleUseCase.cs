@@ -110,6 +110,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         if(id <= 0)
         {
             _notificationService.Add(new Notification("", "Id não pode ser menor ou igual a zero"));
+            return;
         }
 
         var motorcycle = _repository.GetFirst(x => x.Id == id);

@@ -1,0 +1,1 @@
+dotnet sln add $1

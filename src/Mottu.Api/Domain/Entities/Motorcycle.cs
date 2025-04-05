@@ -2,7 +2,7 @@ namespace Mottu.Api.Domain.Entities;
 
 public class Motorcycle
 {
-    public Motorcycle(int id, int year, string model, string plate)
+    public Motorcycle(int id, int year, string? model, string? plate)
     {
         Id = id;
         Year = year;
@@ -12,11 +12,16 @@ public class Motorcycle
 
     public int Id { get; private set; }
     public int Year { get; private set; }
-	public string Model { get; private set; }
-	public string Plate { get; private set; }
+	public string? Model { get; private set; }
+	public string? Plate { get; private set; }
 
-    public void UpdatePlate(string plate)
+    public void UpdatePlate(string? plate)
     {
+        if(string.IsNullOrWhiteSpace(plate))
+        {
+            throw new ArgumentNullException(nameof(plate), "Placa não pode ser nulo ou vazio");
+        }
+
         Plate = plate;
     }
 }
