@@ -27,6 +27,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             return;
         }
 
+        //todo: fix id to string (mandatory) and get from the request (optional)
         var id = new Random().Next();
 
         var motorcycle = new Motorcycle(id, request.Year, request.Model, request.Plate);
@@ -115,6 +116,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
 
         var motorcycle = _repository.GetFirst(x => x.Id == id);
 
+        //todo: verify if dont exists lease
         _repository.Delete(motorcycle);
     }
 }

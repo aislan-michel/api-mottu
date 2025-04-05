@@ -24,12 +24,13 @@ public class MotorcyclesController : ApiControllerBase
 	}
 
 	[HttpPost]
-	public IActionResult Post(PostMotorcycleRequest request)
+	public IActionResult Post([FromBody] PostMotorcycleRequest request)
 	{
 		try
 		{
 			_useCase.Create(request);
 
+			//todo: abstract this
 			if (!_notificationService.HaveNotifications())
 			{
 				return Created();
