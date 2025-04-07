@@ -3,23 +3,33 @@ namespace Mottu.Api.Domain.Entities;
 public class DeliveryMan
 {
     public DeliveryMan(
-        int id, string name, string cnpj, DateTime dateOfBirth, 
-        string cnh, string cnhType, string cnhImage)
+        int id, string name, string companyRegistrationNumber, DateTime dateOfBirth, 
+        DriverLicense driverLicense)
     {
         Id = id;
         Name = name;
-        Cnpj = cnpj;
+        CompanyRegistrationNumber = companyRegistrationNumber;
         DateOfBirth = dateOfBirth;
-        Cnh = cnh;
-        CnhType = cnhType;
-        CnhImage = cnhImage;
+        DriverLicense = driverLicense;
     }
 
     public int Id { get; set; }
     public string Name { get; set; }
-    public string Cnpj { get; set; }
+    public string CompanyRegistrationNumber { get; set; }
     public DateTime DateOfBirth { get; set; }
-    public string Cnh { get; set; }
-    public string CnhType { get; set; }
-    public string CnhImage { get; set; }
+    public DriverLicense DriverLicense { get; private set; }
+}
+
+public class DriverLicense
+{
+    public DriverLicense(string number, string type, string image)
+    {
+        Number = number;
+        Type = type;
+        Image = image;
+    }
+
+    public string Number { get; set; }
+    public string Type { get; set; }
+    public string Image { get; set; }
 }

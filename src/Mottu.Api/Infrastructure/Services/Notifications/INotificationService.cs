@@ -1,4 +1,4 @@
-namespace Mottu.Api.Infrastructure.Notifications;
+namespace Mottu.Api.Infrastructure.Services.Notifications;
 
 public interface INotificationService
 {

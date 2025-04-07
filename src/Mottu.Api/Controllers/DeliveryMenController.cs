@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-using Mottu.Api.Infrastructure.Notifications;
+using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Models;
 using Mottu.Api.UseCases.DeliveryManUseCases;
 
@@ -23,8 +23,30 @@ public class DeliveryMenController : ApiControllerBase
         _logger = logger;
     }
 
+    [HttpPost]
     public IActionResult Register([FromBody] PostDeliveryManRequest request)
     {
-        return Ok();
+        try
+		{
+			_useCase.Create(request);
+
+			if (_notificationService.HaveNotifications())
+			{
+				return BadRequest("Dados inválidos", _notificationService.GetMessages());
+			}
+
+			return Ok();
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+    }
+
+    [HttpPatch]
+    public IActionResult PatchDriverLicenseImage([FromRoute] int id, [FromBody] PatchDriverLicenseImageRequest request)
+    {
+        throw new NotImplementedException();
     }
 }

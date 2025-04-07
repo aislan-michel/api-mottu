@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-using Mottu.Api.Infrastructure.Notifications;
+using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Models;
 using Mottu.Api.UseCases.MotorcycleUseCases;
 
