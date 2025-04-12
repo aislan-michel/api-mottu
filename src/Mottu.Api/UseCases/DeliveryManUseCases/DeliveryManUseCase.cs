@@ -63,4 +63,39 @@ public class DeliveryManUseCase : IDeliveryManUseCase
             _notificationService.Add(new Notification(key, $"Entregador com a CNH {request.DriverLicense} já cadastrado"));
         }
     }
+
+    public void Update(int id, PatchDriverLicenseImageRequest request)
+    {
+        ValidatePatchDriverLicenseImageRequest(id, request);
+
+        if(_notificationService.HaveNotifications())
+        {
+            return;
+        }
+
+        var deliveryMan = _repository.GetFirst(x => x.Id == id);
+
+        _storageService.DeleteImage(deliveryMan.DriverLicense.Image);
+
+        var driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
+
+        deliveryMan.DriverLicense.UpdateImage(driverLicenseImagePath);
+
+        _repository.Update(deliveryMan);
+    }
+
+    private void ValidatePatchDriverLicenseImageRequest(int id, PatchDriverLicenseImageRequest request)
+    {
+        const string key = nameof(PatchDriverLicenseImageRequest);
+
+        if(!_repository.Exists(x => x.Id == id))
+        {
+            _notificationService.Add(new Notification(key, $"Entregador de id {id} não encontrado"));
+        }
+
+        if(string.IsNullOrWhiteSpace(request.DriverLicenseImage))
+        {
+            _notificationService.Add(new Notification(key, $"Imagem não pode ser nula ou vazia"));
+        }
+    }
 }

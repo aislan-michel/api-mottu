@@ -2,9 +2,11 @@ using System.Reflection;
 using Microsoft.OpenApi.Models;
 
 using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Notifications;
 using Mottu.Api.Infrastructure.Repositories;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
+using Mottu.Api.Infrastructure.Services.Notifications;
+using Mottu.Api.Infrastructure.Services.Storage;
+using Mottu.Api.UseCases.DeliveryManUseCases;
 using Mottu.Api.UseCases.MotorcycleUseCases;
 
 namespace Mottu.Api.Extensions
@@ -36,11 +38,13 @@ namespace Mottu.Api.Extensions
         {
             services.AddScoped<IRepository<Motorcycle>, Repository<Motorcycle>>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IStorageService, StorageService>();
         }
 
         public static void AddUseCases(this IServiceCollection services)
         {
             services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
+            services.AddScoped<IDeliveryManUseCase, DeliveryManUseCase>();
         }
     }
 }

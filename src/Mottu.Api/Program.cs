@@ -7,7 +7,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddSwagger();
 builder.Services.AddInfrastructure();
-builder.Services.AddInfrastructure();
+builder.Services.AddUseCases();
 
 var app = builder.Build();
 

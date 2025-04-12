@@ -47,6 +47,21 @@ public class DeliveryMenController : ApiControllerBase
     [HttpPatch]
     public IActionResult PatchDriverLicenseImage([FromRoute] int id, [FromBody] PatchDriverLicenseImageRequest request)
     {
-        throw new NotImplementedException();
+        try
+		{
+			_useCase.Update(id, request);
+
+			if (_notificationService.HaveNotifications())
+			{
+				return BadRequest("Dados inválidos", _notificationService.GetMessages());
+			}
+
+			return Ok();
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
     }
 }

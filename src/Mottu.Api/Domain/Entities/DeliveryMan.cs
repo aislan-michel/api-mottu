@@ -31,5 +31,14 @@ public class DriverLicense
 
     public string Number { get; set; }
     public string Type { get; set; }
+
+    /// <summary>
+    /// path of image
+    /// </summary>
     public string Image { get; set; }
+
+    public void UpdateImage(string image)
+    {
+        Image = image;
+    }
 }
