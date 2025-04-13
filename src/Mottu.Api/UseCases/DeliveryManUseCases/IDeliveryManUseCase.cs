@@ -6,4 +6,5 @@ public interface IDeliveryManUseCase
 {
     void Create(PostDeliveryManRequest request);
     void Update(int id, PatchDriverLicenseImageRequest request);
+    IEnumerable<GetDeliveryManResponse> Get();
 }

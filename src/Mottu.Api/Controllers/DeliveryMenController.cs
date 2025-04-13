@@ -7,7 +7,7 @@ using Mottu.Api.UseCases.DeliveryManUseCases;
 namespace Mottu.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/entregadores")]
 [Produces("application/json")]
 public class DeliveryMenController : ApiControllerBase
 {
@@ -24,7 +24,7 @@ public class DeliveryMenController : ApiControllerBase
     }
 
     [HttpPost]
-    public IActionResult Register([FromBody] PostDeliveryManRequest request)
+    public IActionResult Post([FromBody] PostDeliveryManRequest request)
     {
         try
 		{
@@ -44,8 +44,8 @@ public class DeliveryMenController : ApiControllerBase
 		}
     }
 
-    [HttpPatch]
-    public IActionResult PatchDriverLicenseImage([FromRoute] int id, [FromBody] PatchDriverLicenseImageRequest request)
+    [HttpPatch("{id}/cnh")]
+    public IActionResult Patch([FromRoute] int id, [FromBody] PatchDriverLicenseImageRequest request)
     {
         try
 		{
@@ -64,4 +64,20 @@ public class DeliveryMenController : ApiControllerBase
 			return InternalServerError();
 		}
     }
+
+	[HttpGet]
+	public IActionResult Get()
+	{
+		try
+		{
+			var deliveryMen = _useCase.Get();
+
+			return Ok(deliveryMen);
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+	}
 }

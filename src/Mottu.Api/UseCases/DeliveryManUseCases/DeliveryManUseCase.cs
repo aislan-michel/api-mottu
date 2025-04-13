@@ -75,6 +75,13 @@ public class DeliveryManUseCase : IDeliveryManUseCase
 
         var deliveryMan = _repository.GetFirst(x => x.Id == id);
 
+        //todo: add unit test
+        if(deliveryMan == null)
+        {
+            _notificationService.Add(new Notification("", $"Entregador de id {id} não encontrado"));
+            return;
+        }
+
         _storageService.DeleteImage(deliveryMan.DriverLicense.Image);
 
         var driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
@@ -97,5 +104,13 @@ public class DeliveryManUseCase : IDeliveryManUseCase
         {
             _notificationService.Add(new Notification(key, $"Imagem não pode ser nula ou vazia"));
         }
+    }
+
+    public IEnumerable<GetDeliveryManResponse> Get()
+    {
+        var deliveryMen = _repository.GetCollection();
+
+        return deliveryMen.Select(x => new GetDeliveryManResponse(x.Id, x.Name, x.CompanyRegistrationNumber, x.DateOfBirth,
+            new GetDriverLicenseResponse(x.DriverLicense.Number, x.DriverLicense.Type, x.DriverLicense.Image)));
     }
 }

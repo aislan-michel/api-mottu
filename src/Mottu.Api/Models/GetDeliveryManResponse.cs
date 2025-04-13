@@ -1,10 +1,10 @@
-namespace Mottu.Api.Domain.Entities;
+namespace Mottu.Api.Models;
 
-public class DeliveryMan
+public class GetDeliveryManResponse
 {
-    public DeliveryMan(
+    public GetDeliveryManResponse(
         int id, string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
-        DriverLicense driverLicense)
+        GetDriverLicenseResponse driverLicense)
     {
         Id = id;
         Name = name;
@@ -17,12 +17,12 @@ public class DeliveryMan
     public string Name { get; set; }
     public string CompanyRegistrationNumber { get; set; }
     public DateOnly DateOfBirth { get; set; }
-    public DriverLicense DriverLicense { get; private set; }
+    public GetDriverLicenseResponse DriverLicense { get; private set; }
 }
 
-public class DriverLicense
+public class GetDriverLicenseResponse
 {
-    public DriverLicense(string number, string type, string image)
+    public GetDriverLicenseResponse(string number, string type, string image)
     {
         Number = number;
         Type = type;
@@ -31,14 +31,5 @@ public class DriverLicense
 
     public string Number { get; set; }
     public string Type { get; set; }
-
-    /// <summary>
-    /// path of image
-    /// </summary>
     public string Image { get; set; }
-
-    public void UpdateImage(string image)
-    {
-        Image = image;
-    }
 }

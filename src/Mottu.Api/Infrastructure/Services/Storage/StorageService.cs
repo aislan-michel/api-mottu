@@ -11,7 +11,7 @@ public class StorageService : IStorageService
         }
 
         var imageBytes = Convert.FromBase64String(imageBase64);
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "images");
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "assets", "images");
 
         if (!Directory.Exists(path))
         {
@@ -23,7 +23,7 @@ public class StorageService : IStorageService
             imageName = Guid.NewGuid().ToString();
         }
 
-        var pathImage = Path.Combine(path, imageName);
+        var pathImage = Path.Combine(path, imageName + ".png");
 
         File.WriteAllBytes(pathImage, imageBytes);
 
