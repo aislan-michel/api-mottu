@@ -49,11 +49,11 @@ public class MotorcyclesController : ApiControllerBase
 	}
 
 	[HttpGet]
-	public IActionResult Get([FromQuery] string? plate)
+	public IActionResult Get([FromQuery] GetMotorcyclesRequest request)
 	{
 		try
 		{
-			var motorcycles = _useCase.Get(plate);
+			var motorcycles = _useCase.Get(request.Plate);
 
 			return Ok(motorcycles);
 		}

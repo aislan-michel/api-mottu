@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Mottu.Api.Models;
 
 public class GetDeliveryManResponse
@@ -13,10 +15,19 @@ public class GetDeliveryManResponse
         DriverLicense = driverLicense;
     }
 
+    [JsonPropertyName("identificador")]
     public int Id { get; set; }
+
+    [JsonPropertyName("nome")]
     public string Name { get; set; }
+
+    [JsonPropertyName("cnpj")]
     public string CompanyRegistrationNumber { get; set; }
+
+    [JsonPropertyName("data_nascimento")]
     public DateOnly DateOfBirth { get; set; }
+
+    [JsonPropertyName("cnh")]
     public GetDriverLicenseResponse DriverLicense { get; private set; }
 }
 
@@ -29,7 +40,12 @@ public class GetDriverLicenseResponse
         Image = image;
     }
 
+    [JsonPropertyName("numero")]
     public string Number { get; set; }
+
+    [JsonPropertyName("tipo")]
     public string Type { get; set; }
+
+    [JsonPropertyName("imagem")]
     public string Image { get; set; }
 }
