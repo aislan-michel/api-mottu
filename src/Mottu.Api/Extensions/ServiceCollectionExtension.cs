@@ -37,8 +37,24 @@ namespace Mottu.Api.Extensions
         public static void AddInfrastructure(this IServiceCollection services)
         {
             services.AddScoped<IRepository<Motorcycle>, Repository<Motorcycle>>();
+            services.AddScoped<IRepository<DeliveryMan>, Repository<DeliveryMan>>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IStorageService, StorageService>();
+            services.SeedMotorcycles();
+        }
+
+        private static void SeedMotorcycles(this IServiceCollection services)
+        {
+            using (var scope = services.BuildServiceProvider().CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+
+                var motorcycleRepository = serviceProvider.GetRequiredService<IRepository<Motorcycle>>();
+
+                var id = new Random().Next();
+
+                motorcycleRepository.Create(new Motorcycle(id, 2025, "Honda", "XYZ123"));
+            }
         }
 
         public static void AddUseCases(this IServiceCollection services)

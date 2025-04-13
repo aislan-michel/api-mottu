@@ -2,6 +2,8 @@ using Mottu.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddResponseCompression();
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -20,6 +22,8 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
     });
 }
+
+app.UseResponseCompression();
 
 app.UseHttpsRedirection();
 app.MapControllers();

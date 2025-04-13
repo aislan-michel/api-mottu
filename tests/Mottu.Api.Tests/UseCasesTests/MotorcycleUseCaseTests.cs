@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Moq;
 
 using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Notifications;
+using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Models;
 using Mottu.Api.UseCases.MotorcycleUseCases;
@@ -222,6 +222,20 @@ namespace Mottu.Api.Tests.UseCases
             _repositoryMock.Verify(r => r.GetFirst(It.IsAny<Func<Motorcycle, bool>>()), Times.Once);
             _repositoryMock.Verify(r => r.Delete(It.Is<Motorcycle>(m => m.Id == 1)), Times.Once);
             _notificationServiceMock.Verify(ns => ns.Add(It.IsAny<Notification>()), Times.Never);
+        }
+
+        [Fact]
+        public void Delete_ShouldAddNotification_WhenMotorcycleNotFound()
+        {
+            _repositoryMock.Setup(r => r.GetFirst(It.IsAny<Func<Motorcycle, bool>>())).Returns((Motorcycle)null);
+
+            // Act
+            _motorcycleUseCase.Delete(1);
+
+            // Assert
+            _notificationServiceMock.Verify(ns => ns.Add(It.Is<Notification>(n => n.Message == "Moto não encontrada")), Times.Once);
+            _repositoryMock.Verify(r => r.GetFirst(It.IsAny<Func<Motorcycle, bool>>()), Times.Once);
+            _repositoryMock.Verify(r => r.Delete(It.IsAny<Motorcycle>()), Times.Never);
         }
     }
 }

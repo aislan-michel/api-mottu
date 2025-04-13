@@ -7,7 +7,7 @@ using Mottu.Api.UseCases.MotorcycleUseCases;
 namespace Mottu.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/motos")]
 [Produces("application/json")]
 public class MotorcyclesController : ApiControllerBase
 {
@@ -49,7 +49,7 @@ public class MotorcyclesController : ApiControllerBase
 	}
 
 	[HttpGet]
-	public IActionResult Get([FromQuery] string plate)
+	public IActionResult Get([FromQuery] string? plate)
 	{
 		try
 		{
@@ -64,7 +64,28 @@ public class MotorcyclesController : ApiControllerBase
 		}
 	}
 
-	[HttpPatch]
+	[HttpGet("{id}")]
+	public IActionResult GetById([FromRoute] int id)
+	{
+		try
+		{
+			var motorcycle = _useCase.Get(id);
+
+			if(motorcycle == null)
+			{
+				return NotFound();
+			}
+
+			return Ok(motorcycle);
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+	}
+
+	[HttpPatch("{id}/placa")]
 	public IActionResult Patch([FromRoute] int id, [FromBody] PatchMotorcycleRequest request)
 	{
 		try
@@ -85,7 +106,7 @@ public class MotorcyclesController : ApiControllerBase
 		}
 	}
 
-	[HttpDelete]
+	[HttpDelete("{id}")]
 	public IActionResult Delete([FromRoute] int id)
 	{
 		try
@@ -94,7 +115,7 @@ public class MotorcyclesController : ApiControllerBase
 
 			if (_notificationService.HaveNotifications())
 			{
-				return BadRequest("Dados Inválidos", _notificationService.GetMessages());
+				return NotFound();
 			}
 
 			return Ok();
