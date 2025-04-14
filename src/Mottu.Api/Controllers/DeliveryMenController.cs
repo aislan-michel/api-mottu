@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Infrastructure.Services.Notifications;
-using Mottu.Api.Models;
-using Mottu.Api.UseCases.DeliveryManUseCases;
+using Mottu.Api.Application.Models;
+using Mottu.Api.Application.UseCases.DeliveryManUseCases;
 
 namespace Mottu.Api.Controllers;
 

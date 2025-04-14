@@ -1,9 +1,9 @@
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Infrastructure.Services.Notifications;
-using Mottu.Api.Models;
+using Mottu.Api.Application.Models;
 
-namespace Mottu.Api.UseCases.MotorcycleUseCases;
+namespace Mottu.Api.Application.UseCases.MotorcycleUseCases;
 
 public class MotorcycleUseCase : IMotorcycleUseCase
 {

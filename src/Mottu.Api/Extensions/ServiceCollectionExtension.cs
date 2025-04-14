@@ -6,9 +6,12 @@ using Mottu.Api.Infrastructure.Repositories;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Infrastructure.Services.Storage;
-using Mottu.Api.UseCases.DeliveryManUseCases;
-using Mottu.Api.UseCases.MotorcycleUseCases;
-using Mottu.Api.UseCases.RentUseCases;
+using Mottu.Api.Application.UseCases.DeliveryManUseCases;
+using Mottu.Api.Application.UseCases.MotorcycleUseCases;
+using Mottu.Api.Application.UseCases.RentUseCases;
+using Mottu.Api.Application.Models;
+using Mottu.Api.Application.Validators;
+using FluentValidation;
 
 namespace Mottu.Api.Extensions
 {
@@ -54,7 +57,7 @@ namespace Mottu.Api.Extensions
 
                 var motorcycleUseCase = serviceProvider.GetRequiredService<IMotorcycleUseCase>();
 
-                motorcycleUseCase.Create(new Models.PostMotorcycleRequest()
+                motorcycleUseCase.Create(new PostMotorcycleRequest()
                 {
                     Year = 2025,
                     Model = "Honda",
@@ -65,7 +68,7 @@ namespace Mottu.Api.Extensions
 
                 var driverLicenseImage = configuration.GetValue<string>("Seed:DriverLicenseModel");
 
-                deliveryManUseCase.Create(new Models.PostDeliveryManRequest()
+                deliveryManUseCase.Create(new PostDeliveryManRequest()
                 {
                     Name = "João da Silva",
                     CompanyRegistrationNumber = "71069561000195",
@@ -82,6 +85,11 @@ namespace Mottu.Api.Extensions
             services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
             services.AddScoped<IDeliveryManUseCase, DeliveryManUseCase>();
             services.AddScoped<IRentUseCase, RentUseCase>();
+        }
+
+        public static void AddValidators(this IServiceCollection services)
+        {
+            services.AddScoped<IValidator<PostRentRequest>, PostRentRequestValidator>();
         }
     }
 }

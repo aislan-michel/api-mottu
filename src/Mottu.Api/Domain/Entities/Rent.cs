@@ -6,7 +6,7 @@ public class Rent
         int id,
         DeliveryMan deliveryMan, Motorcycle motorcycle, 
         DateTime startDate, DateTime endDate, DateTime expectedEndDate, 
-        int plan, decimal dailyValue, DateTime? returnDate)
+        int plan, decimal dailyValue, DateTime? returnDate = null)
     {
         Id = id;
         DeliveryMan = deliveryMan;

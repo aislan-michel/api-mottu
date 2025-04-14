@@ -1,6 +1,6 @@
-using Mottu.Api.Models;
+using Mottu.Api.Application.Models;
 
-namespace Mottu.Api.UseCases.DeliveryManUseCases;
+namespace Mottu.Api.Application.UseCases.DeliveryManUseCases;
 
 public interface IDeliveryManUseCase
 {

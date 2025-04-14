@@ -11,6 +11,7 @@ builder.Services.AddSwagger();
 builder.Services.AddInfrastructure();
 builder.Services.AddUseCases();
 builder.Services.Seed(builder.Configuration);
+builder.Services.AddValidators();
 
 var app = builder.Build();
 

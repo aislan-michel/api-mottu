@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mottu.Api.Models;
+namespace Mottu.Api.Application.Models;
 
 public class GetMotorcyclesRequest
 {

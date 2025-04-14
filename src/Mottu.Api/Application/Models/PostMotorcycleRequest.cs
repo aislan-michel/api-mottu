@@ -1,7 +1,7 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Mottu.Api.Models;
+namespace Mottu.Api.Application.Models;
 
 public class PostMotorcycleRequest
 {

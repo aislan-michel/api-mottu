@@ -1,9 +1,10 @@
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Infrastructure.Services.Notifications;
-using Mottu.Api.Models;
+using Mottu.Api.Application.Models;
+using FluentValidation;
 
-namespace Mottu.Api.UseCases.RentUseCases;
+namespace Mottu.Api.Application.UseCases.RentUseCases;
 
 public class RentUseCase : IRentUseCase
 {
@@ -11,26 +12,34 @@ public class RentUseCase : IRentUseCase
     private readonly IRepository<DeliveryMan> _deliveryManRepository;
     private readonly IRepository<Motorcycle> _motorcycleRepository;
     private readonly INotificationService _notificationService;
+    private readonly IValidator<PostRentRequest> _validator;
     private readonly string _notificationKey = nameof(PostRentRequest);
 
     public RentUseCase(
         IRepository<Rent> rentRepository, 
         IRepository<DeliveryMan> deliveryManRepository, 
         IRepository<Motorcycle> motorcycleRepository, 
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IValidator<PostRentRequest> validator)
     {
         _rentRepository = rentRepository;
         _deliveryManRepository = deliveryManRepository;
         _motorcycleRepository = motorcycleRepository;
         _notificationService = notificationService;
+        _validator = validator;
     }
 
     public void Create(PostRentRequest request)
     {
-        ValidatePostRentRequest(request);
+        var validationResult = _validator.Validate(request);
 
-        if(_notificationService.HaveNotifications())
+        if (!validationResult.IsValid)
         {
+            foreach (var error in validationResult.Errors)
+            {
+                _notificationService.Add(new Notification(_notificationKey, error.ErrorMessage));
+            }
+
             return;
         }
 
@@ -62,52 +71,9 @@ public class RentUseCase : IRentUseCase
         var rent = new Rent(id,
             deliveryMan, motorcycle,
             request.StartDate, request.EndDate, request.ExpectedEndDate,
-            request.Plan, dailyValue, null);
+            request.Plan, dailyValue);
 
         _rentRepository.Create(rent);
-    }
-
-    private void ValidatePostRentRequest(PostRentRequest request)
-    {
-        if(request.DeliveryManId <= 0)
-        {
-            _notificationService.Add(new Notification(_notificationKey, "Id do entregador inválido"));
-        }
-
-        if(!_deliveryManRepository.Exists(x => x.Id == request.DeliveryManId))
-        {
-            _notificationService.Add(new Notification(_notificationKey, $"Entregador com id {request.DeliveryManId} não encontrado"));
-        }
-
-        if(request.MotorcycleId <= 0)
-        {
-            _notificationService.Add(new Notification(_notificationKey, "Id da moto inválido"));
-        }
-
-        if(!_motorcycleRepository.Exists(x => x.Id == request.MotorcycleId))
-        {
-            _notificationService.Add(new Notification(_notificationKey, $"Moto com id {request.MotorcycleId} não encontrado"));
-        }
-
-        if(request.StartDate == DateTime.MinValue || request.StartDate == DateTime.MaxValue)
-        {
-            _notificationService.Add(new Notification(_notificationKey, "Data de inicio inválida"));
-        }
-
-        if(request.EndDate == DateTime.MinValue || request.StartDate == DateTime.MaxValue)
-        {
-            _notificationService.Add(new Notification(_notificationKey, "Data de término inválida"));
-        }
-
-        if(request.ExpectedEndDate == DateTime.MinValue || request.ExpectedEndDate == DateTime.MaxValue)
-        {
-            _notificationService.Add(new Notification(_notificationKey, "Data de término prevista inválida"));
-        }
-
-        if(request.Plan <= 0)
-        {
-            _notificationService.Add(new Notification(_notificationKey, "Plano inválido"));
-        }
     }
 
     private decimal CalculateDailyValue(int plan)

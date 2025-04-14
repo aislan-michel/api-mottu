@@ -1,10 +1,10 @@
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
-using Mottu.Api.Models;
+using Mottu.Api.Application.Models;
 using Mottu.Api.Infrastructure.Services.Storage;
 
-namespace Mottu.Api.UseCases.DeliveryManUseCases;
+namespace Mottu.Api.Application.UseCases.DeliveryManUseCases;
 
 public class DeliveryManUseCase : IDeliveryManUseCase
 {

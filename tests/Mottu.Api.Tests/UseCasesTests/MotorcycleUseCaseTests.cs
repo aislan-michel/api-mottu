@@ -1,12 +1,10 @@
-using System.Linq.Expressions;
-
 using Moq;
 
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
-using Mottu.Api.Models;
-using Mottu.Api.UseCases.MotorcycleUseCases;
+using Mottu.Api.Application.Models;
+using Mottu.Api.Application.UseCases.MotorcycleUseCases;
 
 namespace Mottu.Api.Tests.UseCases
 {
