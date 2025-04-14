@@ -147,7 +147,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             return;
         }
 
-        //todo: verify if dont exists lease
+        //todo: verify if dont exists rent
         _repository.Delete(motorcycle);
     }
 }

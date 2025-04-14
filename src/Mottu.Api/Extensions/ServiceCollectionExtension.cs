@@ -8,6 +8,7 @@ using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Infrastructure.Services.Storage;
 using Mottu.Api.UseCases.DeliveryManUseCases;
 using Mottu.Api.UseCases.MotorcycleUseCases;
+using Mottu.Api.UseCases.RentUseCases;
 
 namespace Mottu.Api.Extensions
 {
@@ -25,7 +26,8 @@ namespace Mottu.Api.Extensions
                     Contact = new OpenApiContact
                     {
                         Name = "Aislan Michel Moreira Freitas",
-                        Url = new Uri("https://github.com/aislan-michel")
+                        Url = new Uri("https://github.com/aislan-michel"),
+                        Email = "aislan.michel92@gmail.com"
                     },
                 });
 
@@ -38,22 +40,40 @@ namespace Mottu.Api.Extensions
         {
             services.AddScoped<IRepository<Motorcycle>, Repository<Motorcycle>>();
             services.AddScoped<IRepository<DeliveryMan>, Repository<DeliveryMan>>();
+            services.AddScoped<IRepository<Rent>, Repository<Rent>>();
+
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IStorageService, StorageService>();
-            services.SeedMotorcycles();
         }
 
-        private static void SeedMotorcycles(this IServiceCollection services)
+        public static void Seed(this IServiceCollection services, IConfiguration configuration)
         {
             using (var scope = services.BuildServiceProvider().CreateScope())
             {
                 var serviceProvider = scope.ServiceProvider;
 
-                var motorcycleRepository = serviceProvider.GetRequiredService<IRepository<Motorcycle>>();
+                var motorcycleUseCase = serviceProvider.GetRequiredService<IMotorcycleUseCase>();
 
-                var id = new Random().Next();
+                motorcycleUseCase.Create(new Models.PostMotorcycleRequest()
+                {
+                    Year = 2025,
+                    Model = "Honda",
+                    Plate = "NAV9659"
+                });
 
-                motorcycleRepository.Create(new Motorcycle(id, 2025, "Honda", "XYZ123"));
+                var deliveryManUseCase = serviceProvider.GetRequiredService<IDeliveryManUseCase>();
+
+                var driverLicenseImage = configuration.GetValue<string>("Seed:DriverLicenseModel");
+
+                deliveryManUseCase.Create(new Models.PostDeliveryManRequest()
+                {
+                    Name = "João da Silva",
+                    CompanyRegistrationNumber = "71069561000195",
+                    DateOfBirth = new DateOnly(1999, 12, 28),
+                    DriverLicense = "03503196070",
+                    DriverLicenseType = "A",
+                    DriverLicenseImage = driverLicenseImage
+                });
             }
         }
 
@@ -61,6 +81,7 @@ namespace Mottu.Api.Extensions
         {
             services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
             services.AddScoped<IDeliveryManUseCase, DeliveryManUseCase>();
+            services.AddScoped<IRentUseCase, RentUseCase>();
         }
     }
 }
