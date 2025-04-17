@@ -6,7 +6,8 @@ public class GetRentResponse
 {
     public GetRentResponse(int id, decimal dailyValue, 
         int deliveryManId, int motorcycleId, 
-        DateTime startDate, DateTime endDate, DateTime expectedEndDate, DateTime? returnDate)
+        DateTime startDate, DateTime endDate, DateTime expectedEndDate, DateTime? returnDate,
+        decimal? totalAmountPayable)
     {
         Id = id;
         DailyValue = dailyValue;
@@ -16,6 +17,7 @@ public class GetRentResponse
         EndDate = endDate;
         ExpectedEndDate = expectedEndDate;
         ReturnDate = returnDate;
+        TotalAmountPayable = totalAmountPayable;
     }
 
     [JsonPropertyName("identificador")]
@@ -41,4 +43,7 @@ public class GetRentResponse
 
     [JsonPropertyName("data_devolucao")]
     public DateTime? ReturnDate { get; set; }
+
+    [JsonPropertyName("total_pagar")]
+    public decimal? TotalAmountPayable { get; set; }
 }

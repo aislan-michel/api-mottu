@@ -32,7 +32,7 @@ public class RentController : ApiControllerBase
 
 			if (_notificationService.HaveNotifications())
 			{
-				return BadRequest("Dados inválidos", _notificationService.GetMessages());
+				return BadRequest(_notificationService.GetMessages());
 			}
 
 			return Ok();
@@ -57,6 +57,48 @@ public class RentController : ApiControllerBase
 			}
 
 			return Ok(rent);
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+    }
+
+	[HttpPatch("{id}/devolucao")]
+    public IActionResult GetById([FromRoute] int id, [FromBody] PatchRentRequest request)
+    {
+        try
+		{
+			_useCase.Update(id, request);
+
+			if(_notificationService.HaveNotifications())
+			{
+				return BadRequest(_notificationService.GetMessages());
+			}
+
+			return Ok();
+		}
+		catch (Exception e)
+		{
+			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
+			return InternalServerError();
+		}
+    }
+
+	[HttpGet()]
+    public IActionResult Get()
+    {
+        try
+		{
+			var rents = _useCase.Get();
+
+			if (rents == null)
+			{
+				return NotFound();
+			}
+
+			return Ok(rents);
 		}
 		catch (Exception e)
 		{

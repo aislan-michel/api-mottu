@@ -94,7 +94,7 @@ public class MotorcyclesController : ApiControllerBase
 
 			if (_notificationService.HaveNotifications())
 			{
-				return BadRequest("Dados inválidos", _notificationService.GetMessages());
+				return BadRequest(_notificationService.GetMessages());
 			}
 
 			return Ok();
@@ -115,7 +115,7 @@ public class MotorcyclesController : ApiControllerBase
 
 			if (_notificationService.HaveNotifications())
 			{
-				return NotFound();
+				return BadRequest(_notificationService.GetMessages());
 			}
 
 			return Ok();

@@ -8,14 +8,17 @@ namespace Mottu.Api.Application.UseCases.MotorcycleUseCases;
 public class MotorcycleUseCase : IMotorcycleUseCase
 {
     private readonly INotificationService _notificationService;
-    private readonly IRepository<Motorcycle> _repository;
+    private readonly IRepository<Motorcycle> _motorcycleRepository;
+    private readonly IRepository<Rent> _rentRepository;
 
     public MotorcycleUseCase(
         INotificationService notificationService,
-        IRepository<Motorcycle> repository)
+        IRepository<Motorcycle> motorcycleRepository,
+        IRepository<Rent> rentRepository)
     {
         _notificationService = notificationService;
-        _repository = repository;
+        _motorcycleRepository = motorcycleRepository;
+        _rentRepository = rentRepository;
     }
 
     public void Create(PostMotorcycleRequest request)
@@ -32,7 +35,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
 
         var motorcycle = new Motorcycle(id, request.Year, request.Model, request.Plate);
 
-        _repository.Create(motorcycle);
+        _motorcycleRepository.Create(motorcycle);
 
         //todo: produces event
     }
@@ -57,7 +60,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         }
 
         //todo: i can register the same plate, the first in lowercase and the second in uppercase
-        if (_repository.Exists(x => x.Plate == request.Plate))
+        if (_motorcycleRepository.Exists(x => x.Plate == request.Plate))
         {
             _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
         }
@@ -65,7 +68,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
 
     public IEnumerable<GetMotorcycleResponse> Get(string? plate)
     {
-        return _repository
+        return _motorcycleRepository
             .GetCollection(string.IsNullOrWhiteSpace(plate) ? null : x => x.Plate == plate)
             .Select(x => new GetMotorcycleResponse(x.Id, x.Year, x.Model, x.Plate));
     }
@@ -78,7 +81,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             return default;
         }
 
-        var motorcycle = _repository.GetFirst(x => x.Id == id);
+        var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if(motorcycle == null)
         {
@@ -97,7 +100,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             return;
         }
 
-        var motorcycle = _repository.GetFirst(x => x.Id == id);
+        var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if (motorcycle == null)
         {
@@ -107,7 +110,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
 
         motorcycle.UpdatePlate(request.Plate);
 
-        _repository.Update(motorcycle);
+        _motorcycleRepository.Update(motorcycle);
     }
 
     private void ValidatePatchMotorcycleRequest(int id, PatchMotorcycleRequest request)
@@ -125,7 +128,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         }
 
         //todo: i can update the same plate, the first in lowercase and the second in uppercase
-        if (_repository.Exists(x => x.Plate == request.Plate))
+        if (_motorcycleRepository.Exists(x => x.Plate == request.Plate))
         {
             _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
         }
@@ -133,13 +136,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
 
     public void Delete(int id)
     {
-        if(id <= 0)
-        {
-            _notificationService.Add(new Notification("", "Id não pode ser menor ou igual a zero"));
-            return;
-        }
-
-        var motorcycle = _repository.GetFirst(x => x.Id == id);
+        var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if(motorcycle == null)
         {
@@ -147,7 +144,14 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             return;
         }
 
-        //todo: verify if dont exists rent
-        _repository.Delete(motorcycle);
+        var rent = _rentRepository.GetFirst(x => x.Motorcycle.Id == id);
+
+        if(rent != null)
+        {
+            _notificationService.Add(new Notification("", $"Moto possui registro de locação, id da locação: {rent.Id}"));
+            return;
+        }
+
+        _motorcycleRepository.Delete(motorcycle);
     }
 }

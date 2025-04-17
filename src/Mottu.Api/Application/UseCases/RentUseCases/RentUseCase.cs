@@ -13,6 +13,7 @@ public class RentUseCase : IRentUseCase
     private readonly IRepository<Motorcycle> _motorcycleRepository;
     private readonly INotificationService _notificationService;
     private readonly IValidator<PostRentRequest> _validator;
+    private readonly ILogger<RentUseCase> _logger;
     private readonly string _notificationKey = nameof(PostRentRequest);
 
     public RentUseCase(
@@ -20,13 +21,15 @@ public class RentUseCase : IRentUseCase
         IRepository<DeliveryMan> deliveryManRepository, 
         IRepository<Motorcycle> motorcycleRepository, 
         INotificationService notificationService,
-        IValidator<PostRentRequest> validator)
+        IValidator<PostRentRequest> validator,
+        ILogger<RentUseCase> logger)
     {
         _rentRepository = rentRepository;
         _deliveryManRepository = deliveryManRepository;
         _motorcycleRepository = motorcycleRepository;
         _notificationService = notificationService;
         _validator = validator;
+        _logger = logger;
     }
 
     public void Create(PostRentRequest request)
@@ -66,27 +69,19 @@ public class RentUseCase : IRentUseCase
         }
 
         var id = new Random().Next();
-        var dailyValue = CalculateDailyValue(request.Plan);
+        var today = DateTime.Today;
+        var startDate = new DateTime(today.Year, today.Month, today.Day, 00, 00, 00);
+        var endDate = startDate.AddDays(request.Plan).AddSeconds(-1);
+        var expectedEndDate = endDate;
+        
+        _logger.LogInformation("create a rent... start date: {startDate}, end date: {endDate} and expected end date: {expectedEndDate}", startDate, endDate, expectedEndDate);
 
         var rent = new Rent(id,
             deliveryMan, motorcycle,
-            request.StartDate, request.EndDate, request.ExpectedEndDate,
-            request.Plan, dailyValue);
+            startDate, endDate, expectedEndDate,
+            new Plan(request.Plan));
 
         _rentRepository.Create(rent);
-    }
-
-    private decimal CalculateDailyValue(int plan)
-    {
-        return plan switch
-        {
-            7 => 30,
-            15 => 28,
-            30 => 22,
-            45 => 20,
-            50 => 18,
-            _ => decimal.Zero,
-        };
     }
 
     public GetRentResponse? Get(int id)
@@ -103,9 +98,40 @@ public class RentUseCase : IRentUseCase
             return default;
         }
 
-        return new GetRentResponse(rent.Id, rent.DailyValue,
+        return new GetRentResponse(rent.Id, rent.Plan.DailyRate,
             rent.DeliveryMan.Id, rent.Motorcycle.Id, 
             rent.StartDate, rent.EndDate, rent.ExpectedEndDate,
-            rent.ReturnDate);
+            rent.ReturnDate, rent.TotalAmountPayable);
+    }
+
+    public void Update(int id, PatchRentRequest request)
+    {
+        if(request.ReturnDate == null || request.ReturnDate == DateTime.MinValue || request.ReturnDate == DateTime.MaxValue)
+        {
+            _notificationService.Add(new Notification("", "Data de devolução inválida"));
+            return;
+        }
+
+        var rent = _rentRepository.GetFirst(x => x.Id == id);
+
+        if(rent == null)
+        {
+            _notificationService.Add(new Notification("", $"Locação com id {id} não encontrada"));
+            return;
+        }
+
+        rent.UpdateReturnDate(request.ReturnDate);
+        rent.SetTotalAmountPayable();
+
+        _rentRepository.Update(rent);
+    }
+
+    public IEnumerable<GetRentResponse> Get()
+    {
+        return _rentRepository.GetCollection().Select(rent => new GetRentResponse(
+            rent.Id, rent.Plan.DailyRate,
+            rent.DeliveryMan.Id, rent.Motorcycle.Id, 
+            rent.StartDate, rent.EndDate, rent.ExpectedEndDate,
+            rent.ReturnDate, rent.TotalAmountPayable));
     }
 }

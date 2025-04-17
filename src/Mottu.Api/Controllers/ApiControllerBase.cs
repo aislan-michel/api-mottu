@@ -35,11 +35,11 @@ public abstract class ApiControllerBase : ControllerBase
         });
     }
 
-    protected IActionResult BadRequest(string title, string detail)
+    protected IActionResult BadRequest(string detail)
     {
         return BadRequest(new ProblemDetails
         {
-            Title = title,
+            Title = "bad request",
             Status = StatusCodes.Status400BadRequest,
             Detail = detail,
             Instance = HttpContext.Request.Path

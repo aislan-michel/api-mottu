@@ -9,7 +9,7 @@ public class PostRentRequest
 
     [JsonPropertyName("moto_id")] 
     public int MotorcycleId { get; set; }
-
+/*
     [JsonPropertyName("data_inicio")]
     public DateTime StartDate { get; set; }
 
@@ -17,7 +17,7 @@ public class PostRentRequest
     public DateTime EndDate { get; set; }
 
     [JsonPropertyName("data_previsao_termino")]
-    public DateTime ExpectedEndDate { get; set; }
+    public DateTime ExpectedEndDate { get; set; }*/
 
     [JsonPropertyName("plano")]
     public int Plan { get; set; }
