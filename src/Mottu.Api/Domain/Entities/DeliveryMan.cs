@@ -2,18 +2,17 @@ namespace Mottu.Api.Domain.Entities;
 
 public class DeliveryMan
 {
-    public DeliveryMan(
-        int id, string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
+    public DeliveryMan(string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
         DriverLicense driverLicense)
     {
-        Id = id;
+        Id = Guid.NewGuid().ToString();
         Name = name;
         CompanyRegistrationNumber = companyRegistrationNumber;
         DateOfBirth = dateOfBirth;
         DriverLicense = driverLicense;
     }
 
-    public int Id { get; private set; }
+    public string Id { get; private set; }
     public string Name { get; private set; }
     public string CompanyRegistrationNumber { get; private set; }
     public DateOnly DateOfBirth { get; private set; }

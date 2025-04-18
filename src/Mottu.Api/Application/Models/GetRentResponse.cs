@@ -4,8 +4,8 @@ namespace Mottu.Api.Application.Models;
 
 public class GetRentResponse
 {
-    public GetRentResponse(int id, decimal dailyValue, 
-        int deliveryManId, int motorcycleId, 
+    public GetRentResponse(string id, decimal dailyValue, 
+        string deliveryManId, string motorcycleId, 
         DateTime startDate, DateTime endDate, DateTime expectedEndDate, DateTime? returnDate,
         decimal? totalAmountPayable)
     {
@@ -21,16 +21,16 @@ public class GetRentResponse
     }
 
     [JsonPropertyName("identificador")]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     [JsonPropertyName("valor_diaria")]
     public decimal DailyValue { get; set; }
 
     [JsonPropertyName("entregador_id")]
-    public int DeliveryManId { get; set; }
+    public string DeliveryManId { get; set; }
 
     [JsonPropertyName("moto_id")]
-    public int MotorcycleId { get; set; }
+    public string MotorcycleId { get; set; }
     
     [JsonPropertyName("data_inicio")]
     public DateTime StartDate { get; set; }

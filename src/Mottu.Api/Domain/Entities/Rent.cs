@@ -3,21 +3,18 @@ namespace Mottu.Api.Domain.Entities;
 public class Rent
 {
     public Rent(
-        int id,
         DeliveryMan deliveryMan, Motorcycle motorcycle, 
-        DateTime startDate, DateTime endDate, DateTime expectedEndDate, 
         Plan plan)
     {
-        Id = id;
+        Id = Guid.NewGuid().ToString();
         DeliveryMan = deliveryMan;
         Motorcycle = motorcycle;
-        StartDate = startDate;
-        EndDate = endDate;
-        ExpectedEndDate = expectedEndDate;
         Plan = plan;
+        
+        SetDates();
     }
 
-    public int Id { get; private set; }
+    public string Id { get; private set; }
     public DeliveryMan DeliveryMan { get; private set; }
     public Motorcycle Motorcycle { get; private set; }
     public DateTime StartDate { get; private set; }
@@ -26,6 +23,18 @@ public class Rent
     public Plan Plan { get; private set; }
     public DateTime? ReturnDate { get; private set; }
     public decimal? TotalAmountPayable { get; private set; }
+
+    private void SetDates()
+    {
+        var today = DateTime.Today;
+        var startDate = new DateTime(today.Year, today.Month, today.Day, 00, 00, 00);
+        var endDate = startDate.AddDays(Plan.Days).AddSeconds(-1);
+        var expectedEndDate = endDate;
+
+        StartDate = startDate;
+        EndDate = endDate;
+        ExpectedEndDate = expectedEndDate;
+    }
 
     public void UpdateReturnDate(DateTime? returnDate)
     {

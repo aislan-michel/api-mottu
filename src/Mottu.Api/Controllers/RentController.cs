@@ -45,7 +45,7 @@ public class RentController : ApiControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById([FromRoute] int id)
+    public IActionResult GetById([FromRoute] string id)
     {
         try
 		{
@@ -66,7 +66,7 @@ public class RentController : ApiControllerBase
     }
 
 	[HttpPatch("{id}/devolucao")]
-    public IActionResult GetById([FromRoute] int id, [FromBody] PatchRentRequest request)
+    public IActionResult GetById([FromRoute] string id, [FromBody] PatchRentRequest request)
     {
         try
 		{

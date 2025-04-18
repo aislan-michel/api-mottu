@@ -38,10 +38,10 @@ public class PostRentRequestValidator : AbstractValidator<PostRentRequest>
             .Must(BeAValidPlan).WithMessage($"Plano inválido, planos validos são: {string.Join(", ", _validPlans)}");
     }
 
-    private bool ExistsDeliveryMan(int id) =>
+    private bool ExistsDeliveryMan(string id) =>
         _deliveryManRepository.Exists(x => x.Id == id);
 
-    private bool ExistsMotorcycle(int id) =>
+    private bool ExistsMotorcycle(string id) =>
         _motorcycleRepository.Exists(x => x.Id == id);
 
     private bool BeAValidDate(DateTime date) =>

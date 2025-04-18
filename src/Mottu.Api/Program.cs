@@ -8,10 +8,10 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddSwagger();
+builder.Services.AddValidators();
 builder.Services.AddInfrastructure();
 builder.Services.AddUseCases();
 builder.Services.Seed(builder.Configuration);
-builder.Services.AddValidators();
 
 var app = builder.Build();
 

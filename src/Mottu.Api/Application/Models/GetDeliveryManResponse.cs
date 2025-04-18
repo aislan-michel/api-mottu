@@ -5,7 +5,7 @@ namespace Mottu.Api.Application.Models;
 public class GetDeliveryManResponse
 {
     public GetDeliveryManResponse(
-        int id, string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
+        string id, string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
         GetDriverLicenseResponse driverLicense)
     {
         Id = id;
@@ -16,7 +16,7 @@ public class GetDeliveryManResponse
     }
 
     [JsonPropertyName("identificador")]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     [JsonPropertyName("nome")]
     public string Name { get; set; }

@@ -4,7 +4,7 @@ namespace Mottu.Api.Application.Models;
 
 public class GetMotorcycleResponse
 {
-    public GetMotorcycleResponse(int id, int year, string? model, string? plate)
+    public GetMotorcycleResponse(string id, int year, string? model, string? plate)
     {
         Id = id;
         Year = year;
@@ -13,7 +13,7 @@ public class GetMotorcycleResponse
     }
 
     [JsonPropertyName("identificador")]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     [JsonPropertyName("ano")]
     public int Year { get; set; }

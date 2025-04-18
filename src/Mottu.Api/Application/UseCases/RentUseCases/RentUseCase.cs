@@ -3,6 +3,7 @@ using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Application.Models;
 using FluentValidation;
+using System.Text.Json;
 
 namespace Mottu.Api.Application.UseCases.RentUseCases;
 
@@ -67,30 +68,16 @@ public class RentUseCase : IRentUseCase
             _notificationService.Add(new Notification(_notificationKey, "Moto não encontrada"));
             return;
         }
-
-        var id = new Random().Next();
-        var today = DateTime.Today;
-        var startDate = new DateTime(today.Year, today.Month, today.Day, 00, 00, 00);
-        var endDate = startDate.AddDays(request.Plan).AddSeconds(-1);
-        var expectedEndDate = endDate;
         
-        _logger.LogInformation("create a rent... start date: {startDate}, end date: {endDate} and expected end date: {expectedEndDate}", startDate, endDate, expectedEndDate);
-
-        var rent = new Rent(id,
-            deliveryMan, motorcycle,
-            startDate, endDate, expectedEndDate,
-            new Plan(request.Plan));
+        var rent = new Rent(deliveryMan, motorcycle, new Plan(request.Plan));
+        
+        _logger.LogInformation("create a rent... rent: {rent}", JsonSerializer.Serialize(rent));
 
         _rentRepository.Create(rent);
     }
 
-    public GetRentResponse? Get(int id)
+    public GetRentResponse? Get(string id)
     {
-        if(id <= 0)
-        {
-            return default;
-        }
-
         var rent = _rentRepository.GetFirst(x => x.Id == x.Id);
 
         if(rent == null)
@@ -104,7 +91,7 @@ public class RentUseCase : IRentUseCase
             rent.ReturnDate, rent.TotalAmountPayable);
     }
 
-    public void Update(int id, PatchRentRequest request)
+    public void Update(string id, PatchRentRequest request)
     {
         if(request.ReturnDate == null || request.ReturnDate == DateTime.MinValue || request.ReturnDate == DateTime.MaxValue)
         {

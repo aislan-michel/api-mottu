@@ -45,7 +45,7 @@ public class DeliveryMenController : ApiControllerBase
     }
 
     [HttpPatch("{id}/cnh")]
-    public IActionResult Patch([FromRoute] int id, [FromBody] PatchDriverLicenseImageRequest request)
+    public IActionResult Patch([FromRoute] string id, [FromBody] PatchDriverLicenseImageRequest request)
     {
         try
 		{

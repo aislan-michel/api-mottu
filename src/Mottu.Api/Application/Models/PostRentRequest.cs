@@ -5,10 +5,10 @@ namespace Mottu.Api.Application.Models;
 public class PostRentRequest
 {
     [JsonPropertyName("entregador_id")]
-    public int DeliveryManId { get; set; }
+    public string DeliveryManId { get; set; }
 
     [JsonPropertyName("moto_id")] 
-    public int MotorcycleId { get; set; }
+    public string MotorcycleId { get; set; }
 /*
     [JsonPropertyName("data_inicio")]
     public DateTime StartDate { get; set; }

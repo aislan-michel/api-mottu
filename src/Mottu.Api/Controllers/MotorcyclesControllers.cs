@@ -65,7 +65,7 @@ public class MotorcyclesController : ApiControllerBase
 	}
 
 	[HttpGet("{id}")]
-	public IActionResult GetById([FromRoute] int id)
+	public IActionResult GetById([FromRoute] string id)
 	{
 		try
 		{
@@ -86,7 +86,7 @@ public class MotorcyclesController : ApiControllerBase
 	}
 
 	[HttpPatch("{id}/placa")]
-	public IActionResult Patch([FromRoute] int id, [FromBody] PatchMotorcycleRequest request)
+	public IActionResult Patch([FromRoute] string id, [FromBody] PatchMotorcycleRequest request)
 	{
 		try
 		{
@@ -107,7 +107,7 @@ public class MotorcyclesController : ApiControllerBase
 	}
 
 	[HttpDelete("{id}")]
-	public IActionResult Delete([FromRoute] int id)
+	public IActionResult Delete([FromRoute] string id)
 	{
 		try
 		{

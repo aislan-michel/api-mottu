@@ -30,10 +30,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             return;
         }
 
-        //todo: fix id to string (mandatory) and get from the request (optional)
-        var id = new Random().Next();
-
-        var motorcycle = new Motorcycle(id, request.Year, request.Model, request.Plate);
+        var motorcycle = new Motorcycle(request.Year, request.Model, request.Plate);
 
         _motorcycleRepository.Create(motorcycle);
 
@@ -60,7 +57,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         }
 
         //todo: i can register the same plate, the first in lowercase and the second in uppercase
-        if (_motorcycleRepository.Exists(x => x.Plate == request.Plate))
+        if (_motorcycleRepository.Exists(x => x.Plate.Equals(request.Plate, StringComparison.OrdinalIgnoreCase)))
         {
             _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
         }
@@ -74,13 +71,8 @@ public class MotorcycleUseCase : IMotorcycleUseCase
     }
 
     //todo: create unit tests
-    public GetMotorcycleResponse? Get(int id)
+    public GetMotorcycleResponse? GetById(string id)
     {
-        if(id <= 0)
-        {
-            return default;
-        }
-
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if(motorcycle == null)
@@ -91,7 +83,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         return new GetMotorcycleResponse(motorcycle.Id, motorcycle.Year, motorcycle.Model, motorcycle.Plate);
     }
 
-    public void Update(int id, PatchMotorcycleRequest request)
+    public void Update(string id, PatchMotorcycleRequest request)
     {
         ValidatePatchMotorcycleRequest(id, request);
 
@@ -113,14 +105,9 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         _motorcycleRepository.Update(motorcycle);
     }
 
-    private void ValidatePatchMotorcycleRequest(int id, PatchMotorcycleRequest request)
+    private void ValidatePatchMotorcycleRequest(string id, PatchMotorcycleRequest request)
     {
         const string key = nameof(PatchMotorcycleRequest);
-
-        if(id <= 0)
-        {
-            _notificationService.Add(new Notification(key, "Id não pode ser menor ou igual a zero"));
-        }
 
         if(string.IsNullOrWhiteSpace(request.Plate))
         {
@@ -134,7 +121,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         }
     }
 
-    public void Delete(int id)
+    public void Delete(string id)
     {
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
