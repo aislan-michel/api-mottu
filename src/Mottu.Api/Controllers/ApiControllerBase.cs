@@ -24,17 +24,6 @@ public abstract class ApiControllerBase : ControllerBase
         });
     }
 
-    protected IActionResult UnprocessableEntity(string title, string detail)
-    {
-        return UnprocessableEntity(new ProblemDetails
-        {
-            Title = title,
-            Status = StatusCodes.Status422UnprocessableEntity,
-            Detail = detail,
-            Instance = HttpContext.Request.Path
-        });
-    }
-
     protected IActionResult BadRequest(string detail)
     {
         return BadRequest(new ProblemDetails

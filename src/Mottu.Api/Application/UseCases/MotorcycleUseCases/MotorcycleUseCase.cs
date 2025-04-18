@@ -56,7 +56,6 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             _notificationService.Add(new Notification(key, "Placa não pode ser nulo ou vazio"));
         }
 
-        //todo: i can register the same plate, the first in lowercase and the second in uppercase
         if (_motorcycleRepository.Exists(x => x.Plate.Equals(request.Plate, StringComparison.OrdinalIgnoreCase)))
         {
             _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
@@ -114,8 +113,7 @@ public class MotorcycleUseCase : IMotorcycleUseCase
             _notificationService.Add(new Notification(key, "Placa não pode ser nulo ou vazio"));
         }
 
-        //todo: i can update the same plate, the first in lowercase and the second in uppercase
-        if (_motorcycleRepository.Exists(x => x.Plate == request.Plate))
+        if (_motorcycleRepository.Exists(x => x.Plate.Equals(request.Plate, StringComparison.OrdinalIgnoreCase)))
         {
             _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
         }

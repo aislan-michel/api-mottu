@@ -76,7 +76,7 @@ public class RentUseCase : IRentUseCase
         _rentRepository.Create(rent);
     }
 
-    public GetRentResponse? Get(string id)
+    public GetRentResponse? GetById(string id)
     {
         var rent = _rentRepository.GetFirst(x => x.Id == x.Id);
 

@@ -49,7 +49,7 @@ public class RentController : ApiControllerBase
     {
         try
 		{
-			var rent = _useCase.Get(id);
+			var rent = _useCase.GetById(id);
 
 			if (rent == null)
 			{
@@ -92,11 +92,6 @@ public class RentController : ApiControllerBase
         try
 		{
 			var rents = _useCase.Get();
-
-			if (rents == null)
-			{
-				return NotFound();
-			}
 
 			return Ok(rents);
 		}

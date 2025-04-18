@@ -31,15 +31,12 @@ public class MotorcyclesController : ApiControllerBase
 			_useCase.Create(request);
 
 			//todo: abstract this
-			if (!_notificationService.HaveNotifications())
+			if (_notificationService.HaveNotifications())
 			{
-				return Created();
+				return BadRequest(_notificationService.GetMessages());
 			}
 
-			return UnprocessableEntity(
-				title: "Dados inconsistentes",
-				detail: _notificationService.GetMessages()
-			);
+			return Created();
 		}
 		catch (Exception e)
 		{
