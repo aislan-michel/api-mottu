@@ -28,11 +28,11 @@ public class RentController : ApiControllerBase
     {
         try
 		{
-			_useCase.Create(request);
+			var result = _useCase.Create(request);
 
-			if (_notificationService.HaveNotifications())
+			if (!result.Success)
 			{
-				return BadRequest(_notificationService.GetMessages());
+				return BadRequest(result.GetMessages());
 			}
 
 			return Ok();
@@ -49,14 +49,14 @@ public class RentController : ApiControllerBase
     {
         try
 		{
-			var rent = _useCase.GetById(id);
+			var result = _useCase.GetById(id);
 
-			if (rent == null)
+			if (!result.Success)
 			{
 				return NotFound();
 			}
 
-			return Ok(rent);
+			return Ok(result.Data);
 		}
 		catch (Exception e)
 		{
@@ -66,15 +66,15 @@ public class RentController : ApiControllerBase
     }
 
 	[HttpPatch("{id}/devolucao")]
-    public IActionResult GetById([FromRoute] string id, [FromBody] PatchRentRequest request)
+    public IActionResult Update([FromRoute] string id, [FromBody] PatchRentRequest request)
     {
         try
 		{
-			_useCase.Update(id, request);
+			var result = _useCase.Update(id, request);
 
-			if(_notificationService.HaveNotifications())
+			if(!result.Success)
 			{
-				return BadRequest(_notificationService.GetMessages());
+				return BadRequest(result.GetMessages());
 			}
 
 			return Ok();

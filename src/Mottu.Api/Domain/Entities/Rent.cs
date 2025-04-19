@@ -27,7 +27,7 @@ public class Rent
     private void SetDates()
     {
         var today = DateTime.Today;
-        var startDate = new DateTime(today.Year, today.Month, today.Day, 00, 00, 00);
+        var startDate = new DateTime(today.Year, today.Month, today.Day + 1, 00, 00, 00);
         var endDate = startDate.AddDays(Plan.Days).AddSeconds(-1);
         var expectedEndDate = endDate;
 

@@ -24,16 +24,7 @@ public class PostRentRequestValidator : AbstractValidator<PostRentRequest>
 
         RuleFor(x => x.MotorcycleId)
             .Must(ExistsMotorcycle).WithMessage(x => $"Moto com id {x.MotorcycleId} não encontrada");
-/*
-        RuleFor(x => x.StartDate)
-            .Must(BeAValidDate).WithMessage("Data de início inválida");
 
-        RuleFor(x => x.EndDate)
-            .Must(BeAValidDate).WithMessage("Data de término inválida");
-
-        RuleFor(x => x.ExpectedEndDate)
-            .Must(BeAValidDate).WithMessage("Data de término prevista inválida");
-*/
         RuleFor(x => x.Plan)
             .Must(BeAValidPlan).WithMessage($"Plano inválido, planos validos são: {string.Join(", ", _validPlans)}");
     }
@@ -43,9 +34,6 @@ public class PostRentRequestValidator : AbstractValidator<PostRentRequest>
 
     private bool ExistsMotorcycle(string id) =>
         _motorcycleRepository.Exists(x => x.Id == id);
-
-    private bool BeAValidDate(DateTime date) =>
-        date != DateTime.MinValue && date != DateTime.MaxValue;
 
     private bool BeAValidPlan(int plan) => 
         _validPlans.Contains(plan);

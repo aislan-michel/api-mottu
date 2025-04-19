@@ -1,9 +1,9 @@
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
-using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Application.Models;
 using FluentValidation;
 using System.Text.Json;
+using Mottu.Api.Extensions;
 
 namespace Mottu.Api.Application.UseCases.RentUseCases;
 
@@ -12,61 +12,52 @@ public class RentUseCase : IRentUseCase
     private readonly IRepository<Rent> _rentRepository;
     private readonly IRepository<DeliveryMan> _deliveryManRepository;
     private readonly IRepository<Motorcycle> _motorcycleRepository;
-    private readonly INotificationService _notificationService;
-    private readonly IValidator<PostRentRequest> _validator;
+    private readonly IValidator<PostRentRequest> _postRentRequestValidator;
+    private readonly IValidator<PatchRentRequest> _patchRentRequestValidator;
     private readonly ILogger<RentUseCase> _logger;
-    private readonly string _notificationKey = nameof(PostRentRequest);
 
     public RentUseCase(
         IRepository<Rent> rentRepository, 
         IRepository<DeliveryMan> deliveryManRepository, 
         IRepository<Motorcycle> motorcycleRepository, 
-        INotificationService notificationService,
-        IValidator<PostRentRequest> validator,
+        IValidator<PostRentRequest> postRentRequestValidator, 
+        IValidator<PatchRentRequest> patchRentRequestValidator, 
         ILogger<RentUseCase> logger)
     {
         _rentRepository = rentRepository;
         _deliveryManRepository = deliveryManRepository;
         _motorcycleRepository = motorcycleRepository;
-        _notificationService = notificationService;
-        _validator = validator;
+        _postRentRequestValidator = postRentRequestValidator;
+        _patchRentRequestValidator = patchRentRequestValidator;
         _logger = logger;
     }
 
-    public void Create(PostRentRequest request)
+    public Result<CreateRentResponse> Create(PostRentRequest request)
     {
-        var validationResult = _validator.Validate(request);
+        var validationResult = _postRentRequestValidator.Validate(request);
 
         if (!validationResult.IsValid)
         {
-            foreach (var error in validationResult.Errors)
-            {
-                _notificationService.Add(new Notification(_notificationKey, error.ErrorMessage));
-            }
-
-            return;
+            return Result<CreateRentResponse>.Fail(validationResult.GetErrorMessages());
         }
 
         var deliveryMan = _deliveryManRepository.GetFirst(x => x.Id == request.DeliveryManId);
 
         if(deliveryMan == null)
         {
-            _notificationService.Add(new Notification(_notificationKey, "Entregador não encontrado"));
-            return;
+            return Result<CreateRentResponse>.Fail("Entregador não encontrado");
         }
 
         if(!deliveryMan.DriverLicense.TypeIsA())
         {
-            _notificationService.Add(new Notification(_notificationKey, "Tipo da CNH do entregador é diferente de A"));
-            return;
+            return Result<CreateRentResponse>.Fail("Tipo da CNH do entregador é diferente de A");
         }
 
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == request.MotorcycleId);
 
         if(motorcycle == null)
         {
-            _notificationService.Add(new Notification(_notificationKey, "Moto não encontrada"));
-            return;
+            return Result<CreateRentResponse>.Fail("Moto não encontrada");
         }
         
         var rent = new Rent(deliveryMan, motorcycle, new Plan(request.Plan));
@@ -74,43 +65,48 @@ public class RentUseCase : IRentUseCase
         _logger.LogInformation("create a rent... rent: {rent}", JsonSerializer.Serialize(rent));
 
         _rentRepository.Create(rent);
+
+        return Result<CreateRentResponse>.Ok(new CreateRentResponse());
     }
 
-    public GetRentResponse? GetById(string id)
+    public Result<GetRentResponse?> GetById(string id)
     {
         var rent = _rentRepository.GetFirst(x => x.Id == x.Id);
 
         if(rent == null)
         {
-            return default;
+            return Result<GetRentResponse?>.Fail("locação não encontrada");
         }
 
-        return new GetRentResponse(rent.Id, rent.Plan.DailyRate,
+        return Result<GetRentResponse?>.Ok(new GetRentResponse(
+            rent.Id, rent.Plan.DailyRate,
             rent.DeliveryMan.Id, rent.Motorcycle.Id, 
             rent.StartDate, rent.EndDate, rent.ExpectedEndDate,
-            rent.ReturnDate, rent.TotalAmountPayable);
+            rent.ReturnDate, rent.TotalAmountPayable));
     }
 
-    public void Update(string id, PatchRentRequest request)
+    public Result<UpdateRentResponse> Update(string id, PatchRentRequest request)
     {
-        if(request.ReturnDate == null || request.ReturnDate == DateTime.MinValue || request.ReturnDate == DateTime.MaxValue)
+        var validationResult = _patchRentRequestValidator.Validate(request);
+
+        if(!validationResult.IsValid)
         {
-            _notificationService.Add(new Notification("", "Data de devolução inválida"));
-            return;
+            return Result<UpdateRentResponse>.Fail(validationResult.GetErrorMessages());
         }
 
         var rent = _rentRepository.GetFirst(x => x.Id == id);
 
         if(rent == null)
         {
-            _notificationService.Add(new Notification("", $"Locação com id {id} não encontrada"));
-            return;
+            return Result<UpdateRentResponse>.Fail($"Locação com id {id} não encontrada");
         }
 
         rent.UpdateReturnDate(request.ReturnDate);
         rent.SetTotalAmountPayable();
 
         _rentRepository.Update(rent);
+
+        return Result<UpdateRentResponse>.Ok(new UpdateRentResponse());
     }
 
     public IEnumerable<GetRentResponse> Get()
