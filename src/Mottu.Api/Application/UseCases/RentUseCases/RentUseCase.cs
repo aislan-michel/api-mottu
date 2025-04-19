@@ -7,57 +7,47 @@ using Mottu.Api.Extensions;
 
 namespace Mottu.Api.Application.UseCases.RentUseCases;
 
-public class RentUseCase : IRentUseCase
+public class RentUseCase(
+    IRepository<Rent> rentRepository,
+    IRepository<DeliveryMan> deliveryManRepository,
+    IRepository<Motorcycle> motorcycleRepository,
+    IValidator<PostRentRequest> postRentRequestValidator,
+    IValidator<PatchRentRequest> patchRentRequestValidator,
+    ILogger<RentUseCase> logger) : IRentUseCase
 {
-    private readonly IRepository<Rent> _rentRepository;
-    private readonly IRepository<DeliveryMan> _deliveryManRepository;
-    private readonly IRepository<Motorcycle> _motorcycleRepository;
-    private readonly IValidator<PostRentRequest> _postRentRequestValidator;
-    private readonly IValidator<PatchRentRequest> _patchRentRequestValidator;
-    private readonly ILogger<RentUseCase> _logger;
+    private readonly IRepository<Rent> _rentRepository = rentRepository;
+    private readonly IRepository<DeliveryMan> _deliveryManRepository = deliveryManRepository;
+    private readonly IRepository<Motorcycle> _motorcycleRepository = motorcycleRepository;
+    private readonly IValidator<PostRentRequest> _postRentRequestValidator = postRentRequestValidator;
+    private readonly IValidator<PatchRentRequest> _patchRentRequestValidator = patchRentRequestValidator;
+    private readonly ILogger<RentUseCase> _logger = logger;
 
-    public RentUseCase(
-        IRepository<Rent> rentRepository, 
-        IRepository<DeliveryMan> deliveryManRepository, 
-        IRepository<Motorcycle> motorcycleRepository, 
-        IValidator<PostRentRequest> postRentRequestValidator, 
-        IValidator<PatchRentRequest> patchRentRequestValidator, 
-        ILogger<RentUseCase> logger)
-    {
-        _rentRepository = rentRepository;
-        _deliveryManRepository = deliveryManRepository;
-        _motorcycleRepository = motorcycleRepository;
-        _postRentRequestValidator = postRentRequestValidator;
-        _patchRentRequestValidator = patchRentRequestValidator;
-        _logger = logger;
-    }
-
-    public Result<CreateRentResponse> Create(PostRentRequest request)
+    public Result<string> Create(PostRentRequest request)
     {
         var validationResult = _postRentRequestValidator.Validate(request);
 
         if (!validationResult.IsValid)
         {
-            return Result<CreateRentResponse>.Fail(validationResult.GetErrorMessages());
+            return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
         var deliveryMan = _deliveryManRepository.GetFirst(x => x.Id == request.DeliveryManId);
 
         if(deliveryMan == null)
         {
-            return Result<CreateRentResponse>.Fail("Entregador não encontrado");
+            return Result<string>.Fail("Entregador não encontrado");
         }
 
         if(!deliveryMan.DriverLicense.TypeIsA())
         {
-            return Result<CreateRentResponse>.Fail("Tipo da CNH do entregador é diferente de A");
+            return Result<string>.Fail("Tipo da CNH do entregador é diferente de A");
         }
 
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == request.MotorcycleId);
 
         if(motorcycle == null)
         {
-            return Result<CreateRentResponse>.Fail("Moto não encontrada");
+            return Result<string>.Fail("Moto não encontrada");
         }
         
         var rent = new Rent(deliveryMan, motorcycle, new Plan(request.Plan));
@@ -66,7 +56,7 @@ public class RentUseCase : IRentUseCase
 
         _rentRepository.Create(rent);
 
-        return Result<CreateRentResponse>.Ok(new CreateRentResponse());
+        return Result<string>.Ok(string.Empty);
     }
 
     public Result<GetRentResponse?> GetById(string id)
@@ -85,20 +75,20 @@ public class RentUseCase : IRentUseCase
             rent.ReturnDate, rent.TotalAmountPayable));
     }
 
-    public Result<UpdateRentResponse> Update(string id, PatchRentRequest request)
+    public Result<string> Update(string id, PatchRentRequest request)
     {
         var validationResult = _patchRentRequestValidator.Validate(request);
 
         if(!validationResult.IsValid)
         {
-            return Result<UpdateRentResponse>.Fail(validationResult.GetErrorMessages());
+            return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
         var rent = _rentRepository.GetFirst(x => x.Id == id);
 
         if(rent == null)
         {
-            return Result<UpdateRentResponse>.Fail($"Locação com id {id} não encontrada");
+            return Result<string>.Fail($"Locação com id {id} não encontrada");
         }
 
         rent.UpdateReturnDate(request.ReturnDate);
@@ -106,7 +96,7 @@ public class RentUseCase : IRentUseCase
 
         _rentRepository.Update(rent);
 
-        return Result<UpdateRentResponse>.Ok(new UpdateRentResponse());
+        return Result<string>.Ok(string.Empty);
     }
 
     public IEnumerable<GetRentResponse> Get()

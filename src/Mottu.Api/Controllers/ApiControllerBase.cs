@@ -6,13 +6,6 @@ namespace Mottu.Api.Controllers;
 
 public abstract class ApiControllerBase : ControllerBase
 {
-    protected readonly INotificationService _notificationService;
-
-    protected ApiControllerBase(INotificationService notificationService)
-    {
-        _notificationService = notificationService;
-    }
-
     protected IActionResult InternalServerError()
     {
         return StatusCode(500, new ProblemDetails

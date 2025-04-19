@@ -2,32 +2,29 @@ using Mottu.Api.Domain.Entities;
 using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Application.Models;
+using FluentValidation;
+using Mottu.Api.Extensions;
 
 namespace Mottu.Api.Application.UseCases.MotorcycleUseCases;
 
-public class MotorcycleUseCase : IMotorcycleUseCase
+public class MotorcycleUseCase(
+    IRepository<Motorcycle> motorcycleRepository,
+    IRepository<Rent> rentRepository,
+    IValidator<PostMotorcycleRequest> postMotorcycleRequestValidator,
+    IValidator<PatchMotorcycleRequest> patchMotorcycleRequestValidator) : IMotorcycleUseCase
 {
-    private readonly INotificationService _notificationService;
-    private readonly IRepository<Motorcycle> _motorcycleRepository;
-    private readonly IRepository<Rent> _rentRepository;
+    private readonly IRepository<Motorcycle> _motorcycleRepository = motorcycleRepository;
+    private readonly IRepository<Rent> _rentRepository = rentRepository;
+    private readonly IValidator<PostMotorcycleRequest> _postMotorcycleRequestValidator = postMotorcycleRequestValidator;
+    private readonly IValidator<PatchMotorcycleRequest> _patchMotorcycleRequestValidator = patchMotorcycleRequestValidator;
 
-    public MotorcycleUseCase(
-        INotificationService notificationService,
-        IRepository<Motorcycle> motorcycleRepository,
-        IRepository<Rent> rentRepository)
+    public Result<string> Create(PostMotorcycleRequest request)
     {
-        _notificationService = notificationService;
-        _motorcycleRepository = motorcycleRepository;
-        _rentRepository = rentRepository;
-    }
+        var validationResult = _postMotorcycleRequestValidator.Validate(request);
 
-    public void Create(PostMotorcycleRequest request)
-    {
-        ValidatePostMotorcycleRequest(request);
-
-        if (_notificationService.HaveNotifications())
+        if (!validationResult.IsValid)
         {
-            return;
+            return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
         var motorcycle = new Motorcycle(request.Year, request.Model, request.Plate);
@@ -35,31 +32,8 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         _motorcycleRepository.Create(motorcycle);
 
         //todo: produces event
-    }
 
-    private void ValidatePostMotorcycleRequest(PostMotorcycleRequest request)
-    {
-        const string key = nameof(PostMotorcycleRequest);
-
-        if (request.Year <= 0)
-        {
-            _notificationService.Add(new Notification(key, "Ano da moto menor ou igual a zero"));
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Model))
-        {
-            _notificationService.Add(new Notification(key, "Modelo não pode ser nulo ou vazio"));
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Plate))
-        {
-            _notificationService.Add(new Notification(key, "Placa não pode ser nulo ou vazio"));
-        }
-
-        if (_motorcycleRepository.Exists(x => x.Plate.Equals(request.Plate, StringComparison.OrdinalIgnoreCase)))
-        {
-            _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
-        }
+        return Result<string>.Ok(string.Empty);
     }
 
     public IEnumerable<GetMotorcycleResponse> Get(string? plate)
@@ -82,61 +56,47 @@ public class MotorcycleUseCase : IMotorcycleUseCase
         return new GetMotorcycleResponse(motorcycle.Id, motorcycle.Year, motorcycle.Model, motorcycle.Plate);
     }
 
-    public void Update(string id, PatchMotorcycleRequest request)
+    public Result<string> Update(string id, PatchMotorcycleRequest request)
     {
-        ValidatePatchMotorcycleRequest(id, request);
+        var validationResult = _patchMotorcycleRequestValidator.Validate(request);
 
-        if(_notificationService.HaveNotifications())
+        if(!validationResult.IsValid)
         {
-            return;
+            return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if (motorcycle == null)
         {
-            _notificationService.Add(new Notification(nameof(PatchMotorcycleRequest), "Moto não encontrada"));
-            return;
+            return Result<string>.Fail("Moto não encontrada");
         }
 
         motorcycle.UpdatePlate(request.Plate);
 
         _motorcycleRepository.Update(motorcycle);
+
+        return Result<string>.Ok(string.Empty);
     }
 
-    private void ValidatePatchMotorcycleRequest(string id, PatchMotorcycleRequest request)
-    {
-        const string key = nameof(PatchMotorcycleRequest);
-
-        if(string.IsNullOrWhiteSpace(request.Plate))
-        {
-            _notificationService.Add(new Notification(key, "Placa não pode ser nulo ou vazio"));
-        }
-
-        if (_motorcycleRepository.Exists(x => x.Plate.Equals(request.Plate, StringComparison.OrdinalIgnoreCase)))
-        {
-            _notificationService.Add(new Notification(key, $"Moto com a placa {request.Plate} já cadastrada"));
-        }
-    }
-
-    public void Delete(string id)
+    public Result<string> Delete(string id)
     {
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if(motorcycle == null)
         {
-            _notificationService.Add(new Notification("", "Moto não encontrada"));
-            return;
+            return Result<string>.Fail("Moto não encontrada");
         }
 
         var rent = _rentRepository.GetFirst(x => x.Motorcycle.Id == id);
 
         if(rent != null)
         {
-            _notificationService.Add(new Notification("", $"Moto possui registro de locação, id da locação: {rent.Id}"));
-            return;
+            return Result<string>.Fail($"Moto possui registro de locação, id da locação: {rent.Id}");
         }
 
         _motorcycleRepository.Delete(motorcycle);
+
+        return Result<string>.Ok(string.Empty);
     }
 }

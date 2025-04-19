@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 
-using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Application.Models;
 using Mottu.Api.Application.UseCases.RentUseCases;
 
@@ -9,19 +8,12 @@ namespace Mottu.Api.Controllers;
 [ApiController]
 [Route("api/locacao")]
 [Produces("application/json")]
-public class RentController : ApiControllerBase
+public class RentController(
+    IRentUseCase useCase,
+    ILogger<RentController> logger) : ApiControllerBase
 {
-    private readonly IRentUseCase _useCase;
-    private readonly ILogger<RentController> _logger;
-
-    public RentController(
-        IRentUseCase useCase,
-        ILogger<RentController> logger, 
-        INotificationService notificationService) : base(notificationService)
-    {
-        _useCase = useCase;
-        _logger = logger;
-    }
+    private readonly IRentUseCase _useCase = useCase;
+    private readonly ILogger<RentController> _logger = logger;
 
     [HttpPost]
     public IActionResult Post(PostRentRequest request)

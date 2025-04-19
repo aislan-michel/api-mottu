@@ -4,7 +4,7 @@ namespace Mottu.Api.Application.UseCases.DeliveryManUseCases;
 
 public interface IDeliveryManUseCase
 {
-    void Create(PostDeliveryManRequest request);
-    void Update(string id, PatchDriverLicenseImageRequest request);
+    Result<string> Create(PostDeliveryManRequest request);
+    Result<string> Update(string id, PatchDriverLicenseImageRequest request);
     IEnumerable<GetDeliveryManResponse> Get();
 }

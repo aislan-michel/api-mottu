@@ -4,40 +4,29 @@ using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Application.Models;
 using Mottu.Api.Infrastructure.Services.Storage;
 using FluentValidation;
+using Mottu.Api.Extensions;
+using Mottu.Api.Application.Validators;
 
 namespace Mottu.Api.Application.UseCases.DeliveryManUseCases;
 
-public class DeliveryManUseCase : IDeliveryManUseCase
+public class DeliveryManUseCase(
+    IRepository<DeliveryMan> repository,
+    IStorageService storageService,
+    IValidator<PostDeliveryManRequest> postDeliveryManRequestValidator,
+    IValidator<PatchDriverLicenseImageRequest> patchDriverLicenseImageRequestValidator) : IDeliveryManUseCase
 {
-    private readonly IRepository<DeliveryMan> _repository;
-    private readonly INotificationService _notificationService;
-    private readonly IStorageService _storageService;
-    private readonly IValidator<PostDeliveryManRequest> _validator;
+    private readonly IRepository<DeliveryMan> _repository = repository;
+    private readonly IStorageService _storageService = storageService;
+    private readonly IValidator<PostDeliveryManRequest> _postDeliveryManRequestValidator = postDeliveryManRequestValidator;
+    private readonly IValidator<PatchDriverLicenseImageRequest> _patchDriverLicenseImageRequestValidator = patchDriverLicenseImageRequestValidator;
 
-    public DeliveryManUseCase(
-        IRepository<DeliveryMan> repository,
-        INotificationService notificationService,
-        IStorageService storageService,
-        IValidator<PostDeliveryManRequest> validator)
+    public Result<string> Create(PostDeliveryManRequest request)
     {
-        _repository = repository;
-        _notificationService = notificationService;
-        _storageService = storageService;
-        _validator = validator;
-    }
-
-    public void Create(PostDeliveryManRequest request)
-    {
-        var validationResult = _validator.Validate(request);
+        var validationResult = _postDeliveryManRequestValidator.Validate(request);
 
         if (!validationResult.IsValid)
         {
-            foreach (var error in validationResult.Errors)
-            {
-                _notificationService.Add(new Notification("", error.ErrorMessage));
-            }
-
-            return;
+            return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
         var driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
@@ -46,15 +35,17 @@ public class DeliveryManUseCase : IDeliveryManUseCase
             new DriverLicense(request.DriverLicense, request.DriverLicenseType, driverLicenseImagePath));
 
         _repository.Create(deliveryMan);
+
+        return Result<string>.Ok(string.Empty);
     }
 
-    public void Update(string id, PatchDriverLicenseImageRequest request)
+    public Result<string> Update(string id, PatchDriverLicenseImageRequest request)
     {
-        ValidatePatchDriverLicenseImageRequest(id, request);
+        var validationResult = _patchDriverLicenseImageRequestValidator.Validate(request);
 
-        if(_notificationService.HaveNotifications())
+        if(!validationResult.IsValid)
         {
-            return;
+            return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
         var deliveryMan = _repository.GetFirst(x => x.Id == id);
@@ -62,8 +53,7 @@ public class DeliveryManUseCase : IDeliveryManUseCase
         //todo: add unit test
         if(deliveryMan == null)
         {
-            _notificationService.Add(new Notification("", $"Entregador de id {id} não encontrado"));
-            return;
+            return Result<string>.Fail($"Entregador de id {id} não encontrado");
         }
 
         _storageService.DeleteImage(deliveryMan.DriverLicense.Image);
@@ -73,21 +63,8 @@ public class DeliveryManUseCase : IDeliveryManUseCase
         deliveryMan.DriverLicense.UpdateImage(driverLicenseImagePath);
 
         _repository.Update(deliveryMan);
-    }
 
-    private void ValidatePatchDriverLicenseImageRequest(string id, PatchDriverLicenseImageRequest request)
-    {
-        const string key = nameof(PatchDriverLicenseImageRequest);
-
-        if(!_repository.Exists(x => x.Id == id))
-        {
-            _notificationService.Add(new Notification(key, $"Entregador de id {id} não encontrado"));
-        }
-
-        if(string.IsNullOrWhiteSpace(request.DriverLicenseImage))
-        {
-            _notificationService.Add(new Notification(key, $"Imagem não pode ser nula ou vazia"));
-        }
+        return Result<string>.Ok(string.Empty);
     }
 
     public IEnumerable<GetDeliveryManResponse> Get()

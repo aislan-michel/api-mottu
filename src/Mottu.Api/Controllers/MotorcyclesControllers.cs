@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 
-using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Application.Models;
 using Mottu.Api.Application.UseCases.MotorcycleUseCases;
 
@@ -9,31 +8,24 @@ namespace Mottu.Api.Controllers;
 [ApiController]
 [Route("api/motos")]
 [Produces("application/json")]
-public class MotorcyclesController : ApiControllerBase
+public class MotorcyclesController(
+    IMotorcycleUseCase useCase,
+    ILogger<MotorcyclesController> logger) : ApiControllerBase
 {
-	private readonly IMotorcycleUseCase _useCase;
-	private readonly ILogger<MotorcyclesController> _logger;
+	private readonly IMotorcycleUseCase _useCase = useCase;
+	private readonly ILogger<MotorcyclesController> _logger = logger;
 
-	public MotorcyclesController(
-		IMotorcycleUseCase useCase,
-		ILogger<MotorcyclesController> logger,
-		INotificationService notificationService) : base(notificationService)
-	{
-		_useCase = useCase;
-		_logger = logger;
-	}
-
-	[HttpPost]
+    [HttpPost]
 	public IActionResult Post([FromBody] PostMotorcycleRequest request)
 	{
 		try
 		{
-			_useCase.Create(request);
+			var result = _useCase.Create(request);
 
 			//todo: abstract this
-			if (_notificationService.HaveNotifications())
+			if (!result.Success)
 			{
-				return BadRequest(_notificationService.GetMessages());
+				return BadRequest(result.GetMessages());
 			}
 
 			return Created();
@@ -87,11 +79,11 @@ public class MotorcyclesController : ApiControllerBase
 	{
 		try
 		{
-			_useCase.Update(id, request);
+			var result =_useCase.Update(id, request);
 
-			if (_notificationService.HaveNotifications())
+			if (!result.Success)
 			{
-				return BadRequest(_notificationService.GetMessages());
+				return BadRequest(result.GetMessages());
 			}
 
 			return Ok();
@@ -108,11 +100,11 @@ public class MotorcyclesController : ApiControllerBase
 	{
 		try
 		{
-			_useCase.Delete(id);
+			var result = _useCase.Delete(id);
 
-			if (_notificationService.HaveNotifications())
+			if (!result.Success)
 			{
-				return BadRequest(_notificationService.GetMessages());
+				return BadRequest(result.GetMessages());
 			}
 
 			return Ok();
