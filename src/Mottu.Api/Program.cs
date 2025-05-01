@@ -1,4 +1,5 @@
 using Mottu.Api.Extensions;
+using Mottu.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +40,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-app.UseResponseCompression();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
+app.UseResponseCompression();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

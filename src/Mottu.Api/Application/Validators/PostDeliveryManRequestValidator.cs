@@ -24,6 +24,8 @@ public class PostDeliveryManRequestValidator : AbstractValidator<PostDeliveryMan
 
         RuleFor(x => x.DriverLicense)
             .Must(ExistsDriverLicense).WithMessage(x => $"Entregador com a CNH {x.DriverLicense} já cadastrado");
+
+        //todo: check if driver license image is in base64
     }
 
     private bool BeAValidDriverLicenseType(string type) => 

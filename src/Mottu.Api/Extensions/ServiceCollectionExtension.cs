@@ -143,16 +143,29 @@ public static class ServiceCollectionExtensions
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+        .AddJwtBearer(options => 
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
 
-            ValidIssuer = issuer,
-            ValidAudience = issuer,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                ValidIssuer = issuer,
+                ValidAudience = issuer,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+            };
+
+            /*options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = async (context) =>
+                {
+                },
+                OnChallenge = async (context) =>
+                {
+                }
+            };*/
         });
 
         services.AddScoped<IAuthService, AuthService>();

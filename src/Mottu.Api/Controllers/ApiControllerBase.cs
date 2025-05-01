@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-using Mottu.Api.Infrastructure.Services.Notifications;
+using Mottu.Api.Application.Models;
 
 namespace Mottu.Api.Controllers;
 
@@ -8,23 +8,11 @@ public abstract class ApiControllerBase : ControllerBase
 {
     protected IActionResult InternalServerError()
     {
-        return StatusCode(500, new ProblemDetails
-        {
-            Title = "Erro Interno no Servidor",
-            Status = StatusCodes.Status500InternalServerError,
-            Detail = "Houve um erro inesperado ao processar sua solicitação.",
-            Instance = HttpContext.Request.Path
-        });
+        return StatusCode(500, Result<string>.Fail("Houve um erro inesperado ao processar sua solicitação."));
     }
 
-    protected IActionResult BadRequest(string detail)
+    protected IActionResult BadRequest(string message)
     {
-        return BadRequest(new ProblemDetails
-        {
-            Title = "bad request",
-            Status = StatusCodes.Status400BadRequest,
-            Detail = detail,
-            Instance = HttpContext.Request.Path
-        });
+        return StatusCode(400, Result<string>.Fail(message));
     }
 }
