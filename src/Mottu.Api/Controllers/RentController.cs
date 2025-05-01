@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
@@ -8,6 +9,7 @@ namespace Mottu.Api.Controllers;
 [ApiController]
 [Route("api/locacao")]
 [Produces("application/json")]
+[Authorize(Roles = "admin,entregador")]
 public class RentController(
     IRentUseCase useCase,
     ILogger<RentController> logger) : ApiControllerBase

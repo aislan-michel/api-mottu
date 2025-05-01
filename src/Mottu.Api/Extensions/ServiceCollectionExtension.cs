@@ -12,6 +12,11 @@ using Mottu.Api.Application.UseCases.RentUseCases;
 using Mottu.Api.Application.Models;
 using Mottu.Api.Application.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Mottu.Api.Application.Interfaces;
+using Mottu.Api.Infrastructure.Auth;
 
 namespace Mottu.Api.Extensions;
 
@@ -36,6 +41,31 @@ public static class ServiceCollectionExtensions
 
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Digite o token JWT no campo abaixo."
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
         });
     }
 
@@ -101,7 +131,31 @@ public static class ServiceCollectionExtensions
     {
         services.AddValidatorsFromAssemblyContaining<PostRentRequestValidator>();
         services.AddValidatorsFromAssemblyContaining<PostDeliveryManRequestValidator>();
+    }
 
+    public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var key = configuration["Jwt:Key"];
+        var issuer = configuration["Jwt:Issuer"];
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = issuer,
+            ValidAudience = issuer,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+        });
+
+        services.AddScoped<IAuthService, AuthService>();
     }
 }
 

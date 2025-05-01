@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
@@ -16,6 +17,7 @@ public class DeliveryMenController(
     private readonly ILogger<DeliveryMenController> _logger = logger;
 
     [HttpPost]
+	[Authorize(Roles = "entregador")]
     public IActionResult Post([FromBody] PostDeliveryManRequest request)
     {
         try
@@ -37,6 +39,7 @@ public class DeliveryMenController(
     }
 
     [HttpPatch("{id}/cnh")]
+	[Authorize(Roles = "entregador")]
     public IActionResult Patch([FromRoute] string id, [FromBody] PatchDriverLicenseImageRequest request)
     {
         try
@@ -58,6 +61,7 @@ public class DeliveryMenController(
     }
 
 	[HttpGet]
+	[Authorize(Roles = "admin")]
 	public IActionResult Get()
 	{
 		try

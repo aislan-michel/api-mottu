@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
@@ -8,6 +9,7 @@ namespace Mottu.Api.Controllers;
 [ApiController]
 [Route("api/motos")]
 [Produces("application/json")]
+[Authorize(Roles = "admin")]
 public class MotorcyclesController(
     IMotorcycleUseCase useCase,
     ILogger<MotorcyclesController> logger) : ApiControllerBase
@@ -42,6 +44,8 @@ public class MotorcyclesController(
 	{
 		try
 		{
+			_logger.LogInformation("Iniciando busca de motos...");
+
 			var motorcycles = _useCase.Get(request.Plate);
 
 			return Ok(motorcycles);
