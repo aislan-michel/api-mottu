@@ -1,22 +1,29 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using Mottu.Api.Application.Interfaces;
+using Mottu.Api.Application.Models;
 using Mottu.Api.Controllers;
+using Mottu.Api.Infrastructure.Interfaces;
 
 [ApiController]
 [Route("api/autenticar")]
 [Produces("application/json")]
 [AllowAnonymous]
-public class AuthController(IAuthService authService) : ApiControllerBase
+public class AuthController(ITokenService tokenService) : ApiControllerBase
 {
-    private readonly IAuthService _authService = authService;
+    private readonly ITokenService _tokenService = tokenService;
 
     [HttpGet]
     public IActionResult Get([FromQuery] string role)
     {
-        var token = _authService.GenerateToken(role);
+        var token = _tokenService.GenerateToken(role);
 
         return Ok(token);
+    }
+
+    [HttpPost]
+    public IActionResult Register([FromBody] RegisterUserRequest request)
+    {
+        return Ok();
     }
 }

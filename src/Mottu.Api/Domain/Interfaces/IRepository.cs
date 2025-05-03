@@ -1,4 +1,4 @@
-namespace Mottu.Api.Infrastructure.Repositories.GenericRepository;
+namespace Mottu.Api.Domain.Interfaces;
 
 public interface IRepository<T>
 {

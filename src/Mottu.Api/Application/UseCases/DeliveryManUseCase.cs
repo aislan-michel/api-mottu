@@ -1,13 +1,11 @@
 using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Services.Notifications;
-using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Application.Models;
-using Mottu.Api.Infrastructure.Services.Storage;
 using FluentValidation;
 using Mottu.Api.Extensions;
-using Mottu.Api.Application.Validators;
+using Mottu.Api.Domain.Interfaces;
+using Mottu.Api.Application.UseCases.Interfaces;
 
-namespace Mottu.Api.Application.UseCases.DeliveryManUseCases;
+namespace Mottu.Api.Application.UseCases;
 
 public class DeliveryManUseCase(
     IRepository<DeliveryMan> repository,

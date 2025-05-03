@@ -1,4 +1,4 @@
-namespace Mottu.Api.Infrastructure.Services.Storage;
+namespace Mottu.Api.Domain.Interfaces;
 
 public interface IStorageService
 {

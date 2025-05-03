@@ -2,7 +2,7 @@ using FluentValidation;
 
 using Mottu.Api.Application.Models;
 using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Repositories.GenericRepository;
+using Mottu.Api.Domain.Interfaces;
 
 namespace Mottu.Api.Application.Validators;
 

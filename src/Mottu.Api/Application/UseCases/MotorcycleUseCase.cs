@@ -1,11 +1,11 @@
 using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Repositories.GenericRepository;
-using Mottu.Api.Infrastructure.Services.Notifications;
 using Mottu.Api.Application.Models;
 using FluentValidation;
 using Mottu.Api.Extensions;
+using Mottu.Api.Domain.Interfaces;
+using Mottu.Api.Application.UseCases.Interfaces;
 
-namespace Mottu.Api.Application.UseCases.MotorcycleUseCases;
+namespace Mottu.Api.Application.UseCases;
 
 public class MotorcycleUseCase(
     IRepository<Motorcycle> motorcycleRepository,

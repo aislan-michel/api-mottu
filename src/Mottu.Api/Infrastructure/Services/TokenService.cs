@@ -4,11 +4,11 @@ using System.Text;
 
 using Microsoft.IdentityModel.Tokens;
 
-using Mottu.Api.Application.Interfaces;
+using Mottu.Api.Infrastructure.Interfaces;
 
-namespace Mottu.Api.Infrastructure.Auth;
+namespace Mottu.Api.Infrastructure.Services;
 
-public class AuthService(IConfiguration configuration) : IAuthService
+public class TokenService(IConfiguration configuration) : ITokenService
 {
     private readonly IConfiguration _configuration = configuration;
 
@@ -24,7 +24,7 @@ public class AuthService(IConfiguration configuration) : IAuthService
             new(ClaimTypes.Role, role)
         };
 
-        var token = new JwtSecurityToken(
+        var jwtSecurityToken = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Issuer"],
             claims: claims,
@@ -32,6 +32,6 @@ public class AuthService(IConfiguration configuration) : IAuthService
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
     }
 }

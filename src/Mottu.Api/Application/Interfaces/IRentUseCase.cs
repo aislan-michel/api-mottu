@@ -1,6 +1,6 @@
 using Mottu.Api.Application.Models;
 
-namespace Mottu.Api.Application.UseCases.RentUseCases;
+namespace Mottu.Api.Application.UseCases.Interfaces;
 
 public interface IRentUseCase
 {

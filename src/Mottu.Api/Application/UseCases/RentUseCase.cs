@@ -1,11 +1,12 @@
 using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Repositories.GenericRepository;
 using Mottu.Api.Application.Models;
 using FluentValidation;
 using System.Text.Json;
 using Mottu.Api.Extensions;
+using Mottu.Api.Domain.Interfaces;
+using Mottu.Api.Application.UseCases.Interfaces;
 
-namespace Mottu.Api.Application.UseCases.RentUseCases;
+namespace Mottu.Api.Application.UseCases;
 
 public class RentUseCase(
     IRepository<Rent> rentRepository,

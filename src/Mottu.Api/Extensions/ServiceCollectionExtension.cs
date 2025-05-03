@@ -1,22 +1,23 @@
-using System.Reflection;
-using Microsoft.OpenApi.Models;
 
-using Mottu.Api.Domain.Entities;
-using Mottu.Api.Infrastructure.Repositories;
-using Mottu.Api.Infrastructure.Repositories.GenericRepository;
-using Mottu.Api.Infrastructure.Services.Notifications;
-using Mottu.Api.Infrastructure.Services.Storage;
-using Mottu.Api.Application.UseCases.DeliveryManUseCases;
-using Mottu.Api.Application.UseCases.MotorcycleUseCases;
-using Mottu.Api.Application.UseCases.RentUseCases;
-using Mottu.Api.Application.Models;
-using Mottu.Api.Application.Validators;
+
+using System.Reflection;
+using System.Text;
+
 using FluentValidation;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Mottu.Api.Application.Interfaces;
-using Mottu.Api.Infrastructure.Auth;
+using Microsoft.OpenApi.Models;
+
+using Mottu.Api.Application.Models;
+using Mottu.Api.Application.UseCases;
+using Mottu.Api.Application.UseCases.Interfaces;
+using Mottu.Api.Application.Validators;
+using Mottu.Api.Domain.Entities;
+using Mottu.Api.Domain.Interfaces;
+using Mottu.Api.Infrastructure.Interfaces;
+using Mottu.Api.Infrastructure.Repositories;
+using Mottu.Api.Infrastructure.Services;
 
 namespace Mottu.Api.Extensions;
 
@@ -75,7 +76,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRepository<DeliveryMan>, Repository<DeliveryMan>>();
         services.AddScoped<IRepository<Rent>, Repository<Rent>>();
 
-        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IStorageService, StorageService>();
     }
 
@@ -168,6 +168,7 @@ public static class ServiceCollectionExtensions
             };*/
         });
 
+        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
     }
 }

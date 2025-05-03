@@ -1,4 +1,4 @@
-using Mottu.Api.Infrastructure.Repositories.GenericRepository;
+using Mottu.Api.Domain.Interfaces;
 
 namespace Mottu.Api.Infrastructure.Repositories;
 
