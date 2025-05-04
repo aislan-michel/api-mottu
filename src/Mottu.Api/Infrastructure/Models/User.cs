@@ -12,7 +12,6 @@ public class User
     public string Id { get; private set; }
     public Email Email { get; private set; }
     public string HashPassword { get; private set; }
-    public bool EmailConfirmed { get; private set; }
     public string Role { get; set; }
 
     public void SetHashPassword(string hashPassword)

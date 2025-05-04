@@ -9,21 +9,31 @@ using Mottu.Api.Infrastructure.Interfaces;
 [Route("api/autenticar")]
 [Produces("application/json")]
 [AllowAnonymous]
-public class AuthController(ITokenService tokenService) : ApiControllerBase
+public class AuthController(IAuthService authService) : ApiControllerBase
 {
-    private readonly ITokenService _tokenService = tokenService;
+    private readonly IAuthService _authService = authService;
 
-    [HttpGet]
-    public IActionResult Get([FromQuery] string role)
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] LoginUserRequest request)
     {
-        var token = _tokenService.GenerateToken(role);
+        var result = _authService.Login(request);
 
-        return Ok(token);
+        if(!result.Success)
+        {
+            return BadRequest(result.GetMessages());
+        }
+
+        return Ok(new 
+        {
+            token = result.Data
+        });
     }
 
-    [HttpPost]
+    [HttpPost("registrar")]
     public IActionResult Register([FromBody] RegisterUserRequest request)
     {
-        return Ok();
+        var result = _authService.Register(request);
+
+        return Created();
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using FluentValidation;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -16,6 +17,7 @@ using Mottu.Api.Application.Validators;
 using Mottu.Api.Domain.Entities;
 using Mottu.Api.Domain.Interfaces;
 using Mottu.Api.Infrastructure.Interfaces;
+using Mottu.Api.Infrastructure.Models;
 using Mottu.Api.Infrastructure.Repositories;
 using Mottu.Api.Infrastructure.Services;
 
@@ -72,9 +74,7 @@ public static class ServiceCollectionExtensions
 
     public static void AddInfrastructure(this IServiceCollection services)
     {
-        services.AddScoped<IRepository<Motorcycle>, Repository<Motorcycle>>();
-        services.AddScoped<IRepository<DeliveryMan>, Repository<DeliveryMan>>();
-        services.AddScoped<IRepository<Rent>, Repository<Rent>>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         services.AddScoped<IStorageService, StorageService>();
     }
@@ -170,6 +170,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
     }
 }
 
