@@ -39,7 +39,7 @@ public class ErrorHandlingMiddleware(
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-        var response = Result<string>.Fail("Houve um erro inesperado ao processar sua solicitação - middleware.");
+        var response = Result<string>.Fail("Houve um erro inesperado ao processar sua solicitação.");
         
         return context.Response.WriteAsync(JsonSerializer.Serialize(response));
     }

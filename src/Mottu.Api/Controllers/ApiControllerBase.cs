@@ -8,7 +8,7 @@ public abstract class ApiControllerBase : ControllerBase
 {
     protected IActionResult InternalServerError()
     {
-        return StatusCode(500, Result<string>.Fail("Houve um erro inesperado ao processar sua solicitação - controller base."));
+        return StatusCode(500, Result<string>.Fail("Houve um erro inesperado ao processar sua solicitação."));
     }
 
     protected IActionResult BadRequest(string message)
