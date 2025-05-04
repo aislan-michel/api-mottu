@@ -1,54 +1,51 @@
 using Microsoft.AspNetCore.Identity;
 
 using Mottu.Api.Application.Models;
-using Mottu.Api.Domain.Interfaces;
+using Mottu.Api.Infrastructure.Identity;
 using Mottu.Api.Infrastructure.Interfaces;
-using Mottu.Api.Infrastructure.Models;
 
 namespace Mottu.Api.Infrastructure.Services;
 
-public class AuthService(IPasswordHasher<User> passwordHasher, IRepository<User> userRepository, ITokenService tokenService) : IAuthService
+public class AuthService(
+    UserManager<ApplicationUser> userManager, 
+    SignInManager<ApplicationUser> signInManager,
+    ITokenService tokenService) : IAuthService
 {
-    private readonly IPasswordHasher<User> _passwordHasher = passwordHasher;
-    private readonly IRepository<User> _userRepository = userRepository;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
     private readonly ITokenService _tokenService = tokenService;
 
-    public Result<string> Register(RegisterUserRequest request)
+    public async Task<Result<string>> Register(RegisterUserRequest request)
     {
-        var user = new User(new Email(request.Email), request.Role);
+        var user = new ApplicationUser { UserName = request.Username, Email = request.Email };
+        var result = await _userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
+        {
+            return Result<string>.Fail(result.Errors.Select(x => x.Description));
+        }
 
-        var hashPassword = _passwordHasher.HashPassword(user, request.Password);
+        await _userManager.AddToRoleAsync(user, request.Role);
 
-        user.SetHashPassword(hashPassword);
-
-        _userRepository.Create(user);
-
-        return Result<string>.Ok("Usuário registrado com sucesso");
+        return Result<string>.Ok("usuário criado");
     }
 
-    public Result<string> Login(LoginUserRequest request)
+    public async Task<Result<string>> Login(LoginUserRequest request)
     {
-        var user = _userRepository.GetFirst(x => x.Email.Address == request.Email);
-
-        if(user == null)
+        var user = await _userManager.FindByNameAsync(request.Username);
+        if (user == null)
         {
-            return Result<string>.Fail("Usuário não encontrado");
+            return Result<string>.Fail("usuário não encontrado");
+        }
+            
+        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        if (!result.Succeeded)
+        {
+            return Result<string>.Fail("usuário não encontrado");
         }
 
-        var hashPassword = _passwordHasher.HashPassword(user, request.Password);
+        var roles = await _userManager.GetRolesAsync(user);
 
-        System.Console.WriteLine($@"
-            senha do user: {user.HashPassword}
-            senha digitada pós hash: {hashPassword}
-        ");
-
-        if(!user.CheckPassword(hashPassword))
-        {
-            return Result<string>.Fail("Senha incorreta");
-        }
-
-        var token = _tokenService.GenerateToken(user.Role);
-
+        var token = _tokenService.GenerateToken(roles);
         return Result<string>.Ok(token);
     }
 }

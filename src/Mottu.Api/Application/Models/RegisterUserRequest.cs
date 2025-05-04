@@ -5,6 +5,8 @@ namespace Mottu.Api.Application.Models;
 
 public class RegisterUserRequest
 {
+    public string Username { get; set; }
+
     [EmailAddress]
     public string Email { get; set; }
 

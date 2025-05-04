@@ -6,7 +6,6 @@ using System.Text;
 using FluentValidation;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -14,10 +13,8 @@ using Mottu.Api.Application.Models;
 using Mottu.Api.Application.UseCases;
 using Mottu.Api.Application.UseCases.Interfaces;
 using Mottu.Api.Application.Validators;
-using Mottu.Api.Domain.Entities;
 using Mottu.Api.Domain.Interfaces;
 using Mottu.Api.Infrastructure.Interfaces;
-using Mottu.Api.Infrastructure.Models;
 using Mottu.Api.Infrastructure.Repositories;
 using Mottu.Api.Infrastructure.Services;
 
@@ -79,47 +76,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IStorageService, StorageService>();
     }
 
-    public static void Seed(this IServiceCollection services, IConfiguration configuration)
-    {
-        using (var scope = services.BuildServiceProvider().CreateScope())
-        {
-            var serviceProvider = scope.ServiceProvider;
-
-            var motorcycleUseCase = serviceProvider.GetRequiredService<IMotorcycleUseCase>();
-            /*
-            using (FileStream openStream = File.OpenRead(@"../../../mocks/motorcycles.json"))
-            {
-                var motorcycles = JsonSerializer.Deserialize<List<Motorcycle>>(openStream);
-
-                foreach (var motorcycle in motorcycles)
-                {
-                    
-                }
-            }
-            */
-            motorcycleUseCase.Create(new PostMotorcycleRequest()
-            {
-                Year = 2025,
-                Model = "Honda",
-                Plate = "NAV9659"
-            });
-
-            var deliveryManUseCase = serviceProvider.GetRequiredService<IDeliveryManUseCase>();
-
-            var driverLicenseImage = configuration.GetValue<string>("Seed:DriverLicenseModel");
-
-            deliveryManUseCase.Create(new PostDeliveryManRequest()
-            {
-                Name = "João da Silva",
-                CompanyRegistrationNumber = "71069561000195",
-                DateOfBirth = new DateOnly(1999, 12, 28),
-                DriverLicense = "03503196070",
-                DriverLicenseType = "A",
-                DriverLicenseImage = driverLicenseImage
-            });
-        }
-    }
-
     public static void AddUseCases(this IServiceCollection services)
     {
         services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
@@ -170,7 +126,6 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
     }
 }
 

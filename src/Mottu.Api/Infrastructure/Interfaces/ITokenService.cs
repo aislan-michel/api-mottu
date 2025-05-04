@@ -2,5 +2,5 @@ namespace Mottu.Api.Infrastructure.Interfaces;
 
 public interface ITokenService
 {
-    string GenerateToken(string role);
+    string GenerateToken(IList<string> roles);
 }

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "5000:80"
+    volumes:
+      - ./Data:/app/Data
+
+  sqlitebrowser:
+    image: coleifer/sqlite-web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Data:/data
+    command: sqlite_web /data/mottu.db

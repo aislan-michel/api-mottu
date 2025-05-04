@@ -1,0 +1,1 @@
+dotnet ef migrations add InitialIdentitySetup -o Infrastructure/Migrations

@@ -4,6 +4,6 @@ namespace Mottu.Api.Infrastructure.Interfaces;
 
 public interface IAuthService
 {
-    Result<string> Register(RegisterUserRequest request);
-    Result<string> Login(LoginUserRequest request);
+    Task<Result<string>> Register(RegisterUserRequest request);
+    Task<Result<string>> Login(LoginUserRequest request);
 }

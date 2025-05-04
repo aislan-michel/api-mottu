@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 using Mottu.Api.Extensions;
+using Mottu.Api.Infrastructure.Identity;
 using Mottu.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +17,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlite("Data Source=Data/mottu.db"));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddResponseCompression();
 builder.Services.AddOpenApi();
 
@@ -20,13 +31,16 @@ builder.Services.AddSwagger();
 builder.Services.AddValidators();
 builder.Services.AddInfrastructure();
 builder.Services.AddUseCases();
-builder.Services.Seed(builder.Configuration);
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+await app.ApplyMigrations();
+await app.SeedRoles();
+app.Seed(app.Configuration);
 
 if (app.Environment.IsDevelopment())
 {

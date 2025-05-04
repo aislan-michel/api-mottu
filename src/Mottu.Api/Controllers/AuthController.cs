@@ -14,25 +14,27 @@ public class AuthController(IAuthService authService) : ApiControllerBase
     private readonly IAuthService _authService = authService;
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginUserRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
     {
-        var result = _authService.Login(request);
+        var result = await _authService.Login(request);
 
         if(!result.Success)
         {
             return BadRequest(result.GetMessages());
         }
 
-        return Ok(new 
-        {
-            token = result.Data
-        });
+        return Ok(new { token = result.Data });
     }
 
     [HttpPost("registrar")]
-    public IActionResult Register([FromBody] RegisterUserRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
     {
-        var result = _authService.Register(request);
+        var result = await _authService.Register(request);
+
+        if(!result.Success)
+        {
+            return BadRequest(result.GetMessages());
+        }
 
         return Created();
     }

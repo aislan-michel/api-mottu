@@ -12,7 +12,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public string GenerateToken(string role)
+    public string GenerateToken(IList<string> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
@@ -21,7 +21,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
             //new Claim(ClaimTypes.NameIdentifier, user.Id),
             //new Claim(ClaimTypes.Name, user.Username),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(ClaimTypes.Role, role)
+            new(ClaimTypes.Role, string.Join(", ", roles))
         };
 
         var jwtSecurityToken = new JwtSecurityToken(
