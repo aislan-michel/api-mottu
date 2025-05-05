@@ -2,9 +2,7 @@ namespace Mottu.Api.Domain.Entities;
 
 public class Rent
 {
-    public Rent(
-        DeliveryMan deliveryMan, Motorcycle motorcycle, 
-        Plan plan)
+    public Rent(DeliveryMan deliveryMan, Motorcycle motorcycle, Plan plan)
     {
         Id = Guid.NewGuid().ToString();
         DeliveryMan = deliveryMan;
