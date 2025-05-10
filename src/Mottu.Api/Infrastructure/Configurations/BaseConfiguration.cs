@@ -10,17 +10,21 @@ public abstract class EntityTypeConfigurationBase<TEntity> : IEntityTypeConfigur
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
+        builder.Property(x => x.Id).IsRequired().HasColumnName("id").HasColumnType("varchar(255)");
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.CreatedAt)
-            .HasDefaultValueSql("GETDATE()")
+            .IsRequired().HasColumnName("created_at").HasColumnType("datetime")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .ValueGeneratedOnAdd();
 
         builder.Property(e => e.UpdatedAt)
-            .HasDefaultValueSql("GETDATE()")
-            .ValueGeneratedOnAddOrUpdate();
+            .HasColumnName("update_at").HasColumnType("datetime")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .ValueGeneratedOnUpdate();
 
         builder.Property(e => e.Active)
+            .IsRequired().HasColumnName("active").HasColumnType("TINYINT(1)")
             .HasDefaultValue(false);
     }
 }

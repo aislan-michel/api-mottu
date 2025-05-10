@@ -4,7 +4,7 @@ public abstract class BaseEntity
 {
     protected BaseEntity()
     {
-        Id = Guid.NewGuid().ToString();;
+        Id = Guid.NewGuid().ToString();
         CreatedAt = DateTime.Now;
         Active = true;
     }

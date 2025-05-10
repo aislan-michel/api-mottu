@@ -1,31 +1,43 @@
 namespace Mottu.Api.Domain.Entities;
 
-public class DeliveryMan
+public class DeliveryMan : BaseEntity
 {
-    public DeliveryMan(string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
-        DriverLicense driverLicense)
+    //for rf
+    protected DeliveryMan()
     {
-        Id = Guid.NewGuid().ToString();
+        
+    }
+
+    public DeliveryMan(string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
+        DriverLicense driverLicense, string userId)
+    {
         Name = name;
         CompanyRegistrationNumber = companyRegistrationNumber;
         DateOfBirth = dateOfBirth;
         DriverLicense = driverLicense;
+        UserId = userId;
     }
-
-    public string Id { get; private set; }
+    
     public string Name { get; private set; }
     public string CompanyRegistrationNumber { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
     public DriverLicense DriverLicense { get; private set; }
+
+    public string UserId { get; private set; }
 }
 
 public class DriverLicense
 {
-    public DriverLicense(string number, string type, string image)
+    protected DriverLicense()
+    {
+        
+    }
+
+    public DriverLicense(string number, string type, string? imagePath)
     {
         Number = number;
         Type = type;
-        Image = image;
+        ImagePath = imagePath;
     }
 
     public string Number { get; private set; }
@@ -34,16 +46,16 @@ public class DriverLicense
     /// <summary>
     /// path of image
     /// </summary>
-    public string Image { get; private set; }
+    public string? ImagePath { get; private set; }
 
-    public void UpdateImage(string image)
+    public void UpdateImagePath(string imagePath)
     {
-        if(string.IsNullOrWhiteSpace(image))
+        if(string.IsNullOrWhiteSpace(imagePath))
         {
-            throw new ArgumentNullException(nameof(image), "Imagem da CNH não pode ser nulo ou vazio");
+            throw new ArgumentNullException(nameof(imagePath), "Imagem da CNH não pode ser nulo ou vazio");
         }
 
-        Image = image;
+        ImagePath = imagePath;
     }
 
     public bool TypeIsA()

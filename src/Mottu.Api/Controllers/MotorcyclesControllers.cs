@@ -2,14 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
-using Mottu.Api.Application.UseCases.Interfaces;
+using Mottu.Api.Application.Interfaces;
 
 namespace Mottu.Api.Controllers;
 
 [ApiController]
 [Route("api/motos")]
 [Produces("application/json")]
-[Authorize(Roles = "admin")]
 public class MotorcyclesController(
     IMotorcycleUseCase useCase,
     ILogger<MotorcyclesController> logger) : ApiControllerBase
@@ -18,6 +17,7 @@ public class MotorcyclesController(
 	private readonly ILogger<MotorcyclesController> _logger = logger;
 
     [HttpPost]
+	[Authorize(Roles = "admin")]
 	public IActionResult Post([FromBody] PostMotorcycleRequest request)
 	{
 		try
@@ -40,6 +40,7 @@ public class MotorcyclesController(
 	}
 
 	[HttpGet]
+	[Authorize(Roles = "admin,entregador")]
 	public IActionResult Get([FromQuery] GetMotorcyclesRequest request)
 	{
 		try
@@ -58,6 +59,7 @@ public class MotorcyclesController(
 	}
 
 	[HttpGet("{id}")]
+	[Authorize(Roles = "admin,entregador")]
 	public IActionResult GetById([FromRoute] string id)
 	{
 		try
@@ -79,6 +81,7 @@ public class MotorcyclesController(
 	}
 
 	[HttpPatch("{id}/placa")]
+	[Authorize(Roles = "admin")]
 	public IActionResult Patch([FromRoute] string id, [FromBody] PatchMotorcycleRequest request)
 	{
 		try
@@ -100,6 +103,7 @@ public class MotorcyclesController(
 	}
 
 	[HttpDelete("{id}")]
+	[Authorize(Roles = "admin")]
 	public IActionResult Delete([FromRoute] string id)
 	{
 		try

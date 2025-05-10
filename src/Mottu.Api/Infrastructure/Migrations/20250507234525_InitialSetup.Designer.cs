@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottu.Api.Infrastructure.Identity;
 
@@ -10,9 +11,11 @@ using Mottu.Api.Infrastructure.Identity;
 namespace Mottu.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250507234525_InitialSetup")]
+    partial class InitialSetup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,17 +188,9 @@ namespace Mottu.Api.Infrastructure.Migrations
                         .HasColumnName("update_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("delivery_men", (string)null);
+                    b.ToTable("deliveryMen", (string)null);
                 });
 
             modelBuilder.Entity("Mottu.Api.Domain.Entities.Motorcycle", b =>
@@ -422,18 +417,13 @@ namespace Mottu.Api.Infrastructure.Migrations
 
             modelBuilder.Entity("Mottu.Api.Domain.Entities.DeliveryMan", b =>
                 {
-                    b.HasOne("Mottu.Api.Infrastructure.Identity.ApplicationUser", null)
-                        .WithOne()
-                        .HasForeignKey("Mottu.Api.Domain.Entities.DeliveryMan", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.OwnsOne("Mottu.Api.Domain.Entities.DriverLicense", "DriverLicense", b1 =>
                         {
                             b1.Property<string>("DeliveryManId")
                                 .HasColumnType("varchar(255)");
 
                             b1.Property<string>("ImagePath")
+                                .IsRequired()
                                 .HasColumnType("varchar(255)")
                                 .HasColumnName("driver_license_image_path");
 
@@ -449,7 +439,7 @@ namespace Mottu.Api.Infrastructure.Migrations
 
                             b1.HasKey("DeliveryManId");
 
-                            b1.ToTable("delivery_men");
+                            b1.ToTable("deliveryMen");
 
                             b1.WithOwner()
                                 .HasForeignKey("DeliveryManId");

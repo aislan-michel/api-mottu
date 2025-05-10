@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
-using Mottu.Api.Application.UseCases.Interfaces;
+using Mottu.Api.Application.Interfaces;
 
 namespace Mottu.Api.Controllers;
 
@@ -17,12 +17,13 @@ public class DeliveryMenController(
     private readonly ILogger<DeliveryMenController> _logger = logger;
 
     [HttpPost]
-	[Authorize(Roles = "entregador")]
+	[Authorize(Roles = "admin")]
     public IActionResult Post([FromBody] PostDeliveryManRequest request)
     {
         try
 		{
-			var result = _useCase.Create(request);
+			//todo: fix this null param
+			var result = _useCase.Create(request, null);
 
 			if (!result.Success)
 			{

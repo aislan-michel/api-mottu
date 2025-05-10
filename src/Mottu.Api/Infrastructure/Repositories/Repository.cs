@@ -1,45 +1,50 @@
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Mottu.Api.Domain.Interfaces;
+using Mottu.Api.Infrastructure.Identity;
 
 namespace Mottu.Api.Infrastructure.Repositories;
 
-public class Repository<T> : IRepository<T>
+public class Repository<T>(AppDbContext context) : IRepository<T> where T : class
 {
-    private static readonly List<T> Items = [];
+    private readonly AppDbContext _context = context;
+    private readonly DbSet<T> _dbSet = context.Set<T>();
 
-    public bool Exists(Predicate<T> condition)
+    public bool Exists(Expression<Func<T, bool>> condition)
     {
-        return Items.Exists(condition);
+        return _dbSet.Any(condition);
     }
 
-    public T? GetFirst(Func<T, bool> whereCondition)
+    public T? GetFirst(Expression<Func<T, bool>> whereCondition)
     {
-        if(whereCondition == null)
-        {
-            throw new ArgumentNullException(nameof(whereCondition), "Condição para pegar o primeiro item não pode ser nulo");
-        }
+        if (whereCondition == null)
+            throw new ArgumentNullException(nameof(whereCondition));
 
-        return Items.FirstOrDefault(whereCondition);
+        return _dbSet.FirstOrDefault(whereCondition);
     }
 
-    public IEnumerable<T> GetCollection(Func<T, bool>? whereCondition = null)
+    public IEnumerable<T> GetCollection(Expression<Func<T, bool>>? whereCondition = null)
     {
-        return whereCondition == null ? Items : Items.Where(whereCondition);
+        return whereCondition == null
+            ? _dbSet.ToList()
+            : _dbSet.Where(whereCondition).ToList();
     }
 
-    public void Create(T motorcycle)
+    public void Create(T entity)
     {
-        Items.Add(motorcycle);
+        _dbSet.Add(entity);
+        _context.SaveChanges();
     }
 
-    public void Update(T motorcycle)
+    public void Update(T entity)
     {
-        Items.Remove(motorcycle);
-
-        Items.Add(motorcycle);
+        _dbSet.Update(entity);
+        _context.SaveChanges();
     }
 
-    public void Delete(T motorcycle)
+    public void Delete(T entity)
     {
-        Items.Remove(motorcycle);
+        _dbSet.Remove(entity);
+        _context.SaveChanges();
     }
 }

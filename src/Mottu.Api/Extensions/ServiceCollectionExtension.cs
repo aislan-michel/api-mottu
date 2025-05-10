@@ -9,9 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-using Mottu.Api.Application.Models;
+using Mottu.Api.Application.Interfaces;
 using Mottu.Api.Application.UseCases;
-using Mottu.Api.Application.UseCases.Interfaces;
 using Mottu.Api.Application.Validators;
 using Mottu.Api.Domain.Interfaces;
 using Mottu.Api.Infrastructure.Interfaces;
@@ -126,6 +125,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ILoggedUserService, LoggedUserService>();
     }
 }
 

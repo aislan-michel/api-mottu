@@ -1,7 +1,7 @@
 
 using Mottu.Api.Application.Models;
 
-namespace Mottu.Api.Application.UseCases.Interfaces;
+namespace Mottu.Api.Application.Interfaces;
 
 public interface IMotorcycleUseCase
 {

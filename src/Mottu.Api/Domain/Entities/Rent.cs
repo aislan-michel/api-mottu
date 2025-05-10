@@ -1,20 +1,30 @@
 namespace Mottu.Api.Domain.Entities;
 
-public class Rent
+public class Rent : BaseEntity
 {
+    //for ef
+    protected Rent()
+    {
+        
+    }
+
     public Rent(DeliveryMan deliveryMan, Motorcycle motorcycle, Plan plan)
     {
-        Id = Guid.NewGuid().ToString();
         DeliveryMan = deliveryMan;
+        DeliveryManId = deliveryMan.Id;
         Motorcycle = motorcycle;
+        MotorcycleId = motorcycle.Id;
         Plan = plan;
         
         SetDates();
     }
 
-    public string Id { get; private set; }
+    public string DeliveryManId { get; private set; }
     public DeliveryMan DeliveryMan { get; private set; }
+
+    public string MotorcycleId { get; private set; }
     public Motorcycle Motorcycle { get; private set; }
+
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
     public DateTime ExpectedEndDate { get; private set; }
@@ -91,6 +101,8 @@ public class Rent
 
 public class Plan
 {
+    protected Plan(){}
+
     public Plan(int days)
     {
         Days = days;

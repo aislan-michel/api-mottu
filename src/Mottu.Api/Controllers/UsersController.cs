@@ -1,12 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using Mottu.Api.Application.Models;
-using Mottu.Api.Domain.Interfaces;
 using Mottu.Api.Infrastructure.Identity;
 
 namespace Mottu.Api.Controllers;

@@ -1,1 +1,1 @@
-dotnet ef migrations add InitialIdentitySetup -o Infrastructure/Migrations
+dotnet ef migrations add $1 -o Infrastructure/Migrations --project src/Mottu.Api/Mottu.Api.csproj --startup-project src/Mottu.Api/Mottu.Api.csproj

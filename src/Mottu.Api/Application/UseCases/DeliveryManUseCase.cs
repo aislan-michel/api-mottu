@@ -3,7 +3,8 @@ using Mottu.Api.Application.Models;
 using FluentValidation;
 using Mottu.Api.Extensions;
 using Mottu.Api.Domain.Interfaces;
-using Mottu.Api.Application.UseCases.Interfaces;
+using Mottu.Api.Application.Interfaces;
+using Mottu.Api.Infrastructure.Identity;
 
 namespace Mottu.Api.Application.UseCases;
 
@@ -11,14 +12,18 @@ public class DeliveryManUseCase(
     IRepository<DeliveryMan> repository,
     IStorageService storageService,
     IValidator<PostDeliveryManRequest> postDeliveryManRequestValidator,
-    IValidator<PatchDriverLicenseImageRequest> patchDriverLicenseImageRequestValidator) : IDeliveryManUseCase
+    IValidator<PatchDriverLicenseImageRequest> patchDriverLicenseImageRequestValidator,
+    IAuthService authService,
+    AppDbContext appDbContext) : IDeliveryManUseCase
 {
     private readonly IRepository<DeliveryMan> _repository = repository;
     private readonly IStorageService _storageService = storageService;
     private readonly IValidator<PostDeliveryManRequest> _postDeliveryManRequestValidator = postDeliveryManRequestValidator;
     private readonly IValidator<PatchDriverLicenseImageRequest> _patchDriverLicenseImageRequestValidator = patchDriverLicenseImageRequestValidator;
+    private readonly IAuthService _authService = authService;
+    private readonly AppDbContext _appDbContext = appDbContext;
 
-    public Result<string> Create(PostDeliveryManRequest request)
+    public Result<string> Create(PostDeliveryManRequest request, string userId)
     {
         var validationResult = _postDeliveryManRequestValidator.Validate(request);
 
@@ -27,10 +32,16 @@ public class DeliveryManUseCase(
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
-        var driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
+        //todo: imagem da cnh não é obrigatório, mas, usuário ficara "inativado" até enviar
+        //ou seja, não podera alugar uma moto
+        string? driverLicenseImagePath = null;
+        if(!string.IsNullOrWhiteSpace(request.DriverLicenseImage))
+        {
+            driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
+        }
 
         var deliveryMan = new DeliveryMan(request.Name, request.CompanyRegistrationNumber, request.DateOfBirth,
-            new DriverLicense(request.DriverLicense, request.DriverLicenseType, driverLicenseImagePath));
+            new DriverLicense(request.DriverLicense, request.DriverLicenseType, driverLicenseImagePath), userId);
 
         _repository.Create(deliveryMan);
 
@@ -54,11 +65,11 @@ public class DeliveryManUseCase(
             return Result<string>.Fail($"Entregador de id {id} não encontrado");
         }
 
-        _storageService.DeleteImage(deliveryMan.DriverLicense.Image);
+        _storageService.DeleteImage(deliveryMan.DriverLicense.ImagePath);
 
         var driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
 
-        deliveryMan.DriverLicense.UpdateImage(driverLicenseImagePath);
+        deliveryMan.DriverLicense.UpdateImagePath(driverLicenseImagePath);
 
         _repository.Update(deliveryMan);
 
@@ -70,6 +81,52 @@ public class DeliveryManUseCase(
         var deliveryMen = _repository.GetCollection();
 
         return deliveryMen.Select(x => new GetDeliveryManResponse(x.Id, x.Name, x.CompanyRegistrationNumber, x.DateOfBirth,
-            new GetDriverLicenseResponse(x.DriverLicense.Number, x.DriverLicense.Type, x.DriverLicense.Image)));
+            new GetDriverLicenseResponse(x.DriverLicense.Number, x.DriverLicense.Type, x.DriverLicense.ImagePath)));
+    }
+
+    public async Task<Result<string>> Register(RegisterDeliveryManRequest request)
+    {
+        var transaction = await _appDbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            var registerUserResponse = await _authService.Register(new RegisterUserRequest()
+            {
+                Email = request.Email,
+                Password = request.Password,
+                Role = "entregador",
+                Username = request.Username
+            });
+
+            if(!registerUserResponse.Success)
+            {
+                await transaction.RollbackAsync();
+                return Result<string>.Fail(registerUserResponse.GetMessages());
+            }
+
+            var postDeliveryManResponse = Create(new PostDeliveryManRequest()
+            {
+                Name = request.Name,
+                CompanyRegistrationNumber = request.CompanyRegistrationNumber,
+                DateOfBirth = request.DateOfBirth,
+                DriverLicense = request.DriverLicense,
+                DriverLicenseImage = request.DriverLicenseImage,
+                DriverLicenseType = request.DriverLicenseType
+            }, registerUserResponse.Data.UserId);
+
+            if(!postDeliveryManResponse.Success)
+            {
+                await transaction.RollbackAsync();
+                return Result<string>.Fail(postDeliveryManResponse.GetMessages());
+            }
+
+            await transaction.CommitAsync();
+            return Result<string>.Ok("sucesso");
+        }
+        catch(Exception e)
+        {   
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

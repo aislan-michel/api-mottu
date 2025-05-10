@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using Mottu.Api.Application.Interfaces;
 using Mottu.Api.Application.Models;
-using Mottu.Api.Application.UseCases.Interfaces;
 using Mottu.Api.Infrastructure.Identity;
 
 namespace Mottu.Api.Extensions;
@@ -32,20 +32,6 @@ public static class AppExtensions
                 Year = 2025,
                 Model = "Honda",
                 Plate = "NAV9659"
-            });
-
-            var deliveryManUseCase = serviceProvider.GetRequiredService<IDeliveryManUseCase>();
-
-            var driverLicenseImage = configuration.GetValue<string>("Seed:DriverLicenseModel");
-
-            deliveryManUseCase.Create(new PostDeliveryManRequest()
-            {
-                Name = "João da Silva",
-                CompanyRegistrationNumber = "71069561000195",
-                DateOfBirth = new DateOnly(1999, 12, 28),
-                DriverLicense = "03503196070",
-                DriverLicenseType = "A",
-                DriverLicenseImage = driverLicenseImage
             });
         }
     }

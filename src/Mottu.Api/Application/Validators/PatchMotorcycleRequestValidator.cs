@@ -20,5 +20,5 @@ public class PatchMotorcycleRequestValidator : AbstractValidator<PatchMotorcycle
     }
 
     private bool ExistsPlate(string? plate) => 
-        !_motorcycleRepository.Exists(x => x.Plate.Equals(plate, StringComparison.OrdinalIgnoreCase));
+        !_motorcycleRepository.Exists(x => x.Plate == plate);//(x => x.Plate.Equals(plate, StringComparison.OrdinalIgnoreCase));
 }

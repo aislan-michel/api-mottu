@@ -1,9 +1,20 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Mottu.Api.Application.Models;
-
-public class PostDeliveryManRequest
+public class RegisterDeliveryManRequest
 {
+    [JsonPropertyName("nome_usuario")]
+    public string Username { get; set; }
+
+    [EmailAddress]
+    [JsonPropertyName("email")]
+    public string Email { get; set; }
+
+    [PasswordPropertyText]
+    [JsonPropertyName("senha")]
+    public string Password { get; set; }
+
     [JsonPropertyName("nome")]
     //[DefaultValue("João da Silva")]
     public string Name { get; set; }
@@ -24,5 +35,6 @@ public class PostDeliveryManRequest
     /// Driver license image in base64 string
     /// </summary>
     [JsonPropertyName("imagem_cnh")]
-    public string? DriverLicenseImage { get; set; }
+    public string DriverLicenseImage { get; set; }
+
 }

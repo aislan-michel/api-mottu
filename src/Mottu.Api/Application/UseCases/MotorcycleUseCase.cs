@@ -3,7 +3,7 @@ using Mottu.Api.Application.Models;
 using FluentValidation;
 using Mottu.Api.Extensions;
 using Mottu.Api.Domain.Interfaces;
-using Mottu.Api.Application.UseCases.Interfaces;
+using Mottu.Api.Application.Interfaces;
 
 namespace Mottu.Api.Application.UseCases;
 

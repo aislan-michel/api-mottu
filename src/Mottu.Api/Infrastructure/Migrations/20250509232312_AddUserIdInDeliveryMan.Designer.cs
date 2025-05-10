@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottu.Api.Infrastructure.Identity;
 
@@ -10,9 +11,11 @@ using Mottu.Api.Infrastructure.Identity;
 namespace Mottu.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250509232312_AddUserIdInDeliveryMan")]
+    partial class AddUserIdInDeliveryMan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -434,6 +437,7 @@ namespace Mottu.Api.Infrastructure.Migrations
                                 .HasColumnType("varchar(255)");
 
                             b1.Property<string>("ImagePath")
+                                .IsRequired()
                                 .HasColumnType("varchar(255)")
                                 .HasColumnName("driver_license_image_path");
 

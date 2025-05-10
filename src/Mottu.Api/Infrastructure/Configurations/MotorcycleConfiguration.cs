@@ -11,9 +11,9 @@ public class MotorcycleConfiguration : EntityTypeConfigurationBase<Motorcycle>
     {
         base.Configure(builder);
 
-        builder.Property(x => x.Year).IsRequired().HasColumnType("number(4)");
-        builder.Property(x => x.Model).IsRequired().HasColumnType("varchar(255)");
-        builder.Property(x => x.Plate).IsRequired().HasColumnType("varchar(7)");
+        builder.Property(x => x.Year).IsRequired().HasColumnName("year").HasColumnType("varchar(4)");
+        builder.Property(x => x.Model).IsRequired().HasColumnName("model").HasColumnType("varchar(255)");
+        builder.Property(x => x.Plate).IsRequired().HasColumnName("plate").HasColumnType("varchar(7)");
 
         builder.ToTable("motorcycles");
     }

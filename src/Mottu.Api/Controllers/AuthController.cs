@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
 using Mottu.Api.Controllers;
-using Mottu.Api.Infrastructure.Interfaces;
+using Mottu.Api.Application.Interfaces;
 
 [ApiController]
 [Route("api/autenticar")]
@@ -24,18 +24,5 @@ public class AuthController(IAuthService authService) : ApiControllerBase
         }
 
         return Ok(new { token = result.Data });
-    }
-
-    [HttpPost("registrar")]
-    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
-    {
-        var result = await _authService.Register(request);
-
-        if(!result.Success)
-        {
-            return BadRequest(result.GetMessages());
-        }
-
-        return Created();
     }
 }

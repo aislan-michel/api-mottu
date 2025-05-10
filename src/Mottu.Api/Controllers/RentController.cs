@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
-using Mottu.Api.Application.UseCases.Interfaces;
+using Mottu.Api.Application.Interfaces;
 
 namespace Mottu.Api.Controllers;
 

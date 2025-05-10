@@ -4,7 +4,7 @@ using FluentValidation;
 using System.Text.Json;
 using Mottu.Api.Extensions;
 using Mottu.Api.Domain.Interfaces;
-using Mottu.Api.Application.UseCases.Interfaces;
+using Mottu.Api.Application.Interfaces;
 
 namespace Mottu.Api.Application.UseCases;
 
@@ -14,7 +14,8 @@ public class RentUseCase(
     IRepository<Motorcycle> motorcycleRepository,
     IValidator<PostRentRequest> postRentRequestValidator,
     IValidator<PatchRentRequest> patchRentRequestValidator,
-    ILogger<RentUseCase> logger) : IRentUseCase
+    ILogger<RentUseCase> logger,
+    ILoggedUserService loggedUserService) : IRentUseCase
 {
     private readonly IRepository<Rent> _rentRepository = rentRepository;
     private readonly IRepository<DeliveryMan> _deliveryManRepository = deliveryManRepository;
@@ -22,6 +23,7 @@ public class RentUseCase(
     private readonly IValidator<PostRentRequest> _postRentRequestValidator = postRentRequestValidator;
     private readonly IValidator<PatchRentRequest> _patchRentRequestValidator = patchRentRequestValidator;
     private readonly ILogger<RentUseCase> _logger = logger;
+    private readonly ILoggedUserService _loggedUserService = loggedUserService;
 
     public Result<string> Create(PostRentRequest request)
     {
@@ -32,7 +34,9 @@ public class RentUseCase(
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
-        var deliveryMan = _deliveryManRepository.GetFirst(x => x.Id == request.DeliveryManId);
+        var deliveryManId = _loggedUserService.DeliveryManId;
+
+        var deliveryMan = _deliveryManRepository.GetFirst(x => x.Id == deliveryManId);
 
         if(deliveryMan == null)
         {
@@ -102,10 +106,13 @@ public class RentUseCase(
 
     public IEnumerable<GetRentResponse> Get()
     {
-        return _rentRepository.GetCollection().Select(rent => new GetRentResponse(
-            rent.Id, rent.Plan.DailyRate,
-            rent.DeliveryMan.Id, rent.Motorcycle.Id, 
-            rent.StartDate, rent.EndDate, rent.ExpectedEndDate,
-            rent.ReturnDate, rent.TotalAmountPayable));
+        var deliveryManId = _loggedUserService.DeliveryManId;
+
+        return _rentRepository.GetCollection(x => x.DeliveryManId == deliveryManId)
+            .Select(rent => new GetRentResponse(
+                rent.Id, rent.Plan.DailyRate,
+                rent.DeliveryMan.Id, rent.Motorcycle.Id, 
+                rent.StartDate, rent.EndDate, rent.ExpectedEndDate,
+                rent.ReturnDate, rent.TotalAmountPayable));
     }
 }

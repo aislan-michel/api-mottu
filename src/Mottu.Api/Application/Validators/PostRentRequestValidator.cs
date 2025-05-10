@@ -19,9 +19,6 @@ public class PostRentRequestValidator : AbstractValidator<PostRentRequest>
         _deliveryManRepository = deliveryManRepository;
         _motorcycleRepository = motorcycleRepository;
 
-        RuleFor(x => x.DeliveryManId)
-            .Must(ExistsDeliveryMan).WithMessage(x => $"Entregador com id {x.DeliveryManId} não encontrado");
-
         RuleFor(x => x.MotorcycleId)
             .Must(ExistsMotorcycle).WithMessage(x => $"Moto com id {x.MotorcycleId} não encontrada");
 
