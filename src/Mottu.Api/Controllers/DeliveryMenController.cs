@@ -10,71 +10,45 @@ namespace Mottu.Api.Controllers;
 [Route("api/entregadores")]
 [Produces("application/json")]
 public class DeliveryMenController(
-    IDeliveryManUseCase useCase,
-    ILogger<DeliveryMenController> logger) : ApiControllerBase
+	IDeliveryManUseCase useCase,
+	ILogger<DeliveryMenController> logger) : ControllerBase
 {
-    private readonly IDeliveryManUseCase _useCase = useCase;
-    private readonly ILogger<DeliveryMenController> _logger = logger;
+	private readonly IDeliveryManUseCase _useCase = useCase;
+	private readonly ILogger<DeliveryMenController> _logger = logger;
 
-    [HttpPost]
+	[HttpPost]
 	[Authorize(Roles = "admin")]
-    public IActionResult Post([FromBody] PostDeliveryManRequest request)
-    {
-        try
+	public async Task<IActionResult> Post([FromBody] RegisterDeliveryManRequest request)
+	{
+		//todo: fix this null param
+		var result = await _useCase.Register(request);
+
+		if (!result.Success)
 		{
-			//todo: fix this null param
-			var result = _useCase.Create(request, null);
-
-			if (!result.Success)
-			{
-				return BadRequest(result.GetMessages());
-			}
-
-			return Ok();
+			return BadRequest(result.GetMessages());
 		}
-		catch (Exception e)
-		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
-		}
-    }
 
-    [HttpPatch("{id}/cnh")]
+		return Ok();
+	}
+
+	[HttpPatch("{id}/cnh")]
 	[Authorize(Roles = "entregador")]
-    public IActionResult Patch([FromRoute] string id, [FromBody] PatchDriverLicenseImageRequest request)
-    {
-        try
-		{
-			var result = _useCase.Update(id, request);
+	public IActionResult Patch([FromRoute] string id, [FromBody] PatchDriverLicenseImageRequest request)
+	{
+		var result = _useCase.Update(id, request);
 
-			if (!result.Success)
-			{
-				return BadRequest(result.GetMessages());
-			}
-
-			return Ok();
-		}
-		catch (Exception e)
+		if (!result.Success)
 		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
+			return BadRequest(result.GetMessages());
 		}
-    }
+
+		return Ok();
+	}
 
 	[HttpGet]
 	[Authorize(Roles = "admin")]
 	public async Task<IActionResult> Get()
 	{
-		try
-		{
-			var deliveryMen = await _useCase.Get();
-
-			return Ok(deliveryMen);
-		}
-		catch (Exception e)
-		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
-		}
+		return Ok(await _useCase.Get());
 	}
 }

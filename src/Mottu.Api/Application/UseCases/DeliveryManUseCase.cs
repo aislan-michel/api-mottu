@@ -24,7 +24,7 @@ public class DeliveryManUseCase(
     private readonly IAuthService _authService = authService;
     private readonly AppDbContext _appDbContext = appDbContext;
 
-    public Result<string> Create(PostDeliveryManRequest request, string userId)
+    private Result<string> Create(PostDeliveryManRequest request, string userId)
     {
         var validationResult = _postDeliveryManRequestValidator.Validate(request);
 
@@ -111,7 +111,7 @@ public class DeliveryManUseCase(
                 CompanyRegistrationNumber = request.CompanyRegistrationNumber,
                 DateOfBirth = request.DateOfBirth,
                 DriverLicense = request.DriverLicense,
-                DriverLicenseImageBase64 = request.DriverLicenseImage,
+                DriverLicenseImageBase64 = request.DriverLicenseImageBase64,
                 DriverLicenseType = request.DriverLicenseType
             }, registerUserResponse.Data.UserId);
 
@@ -126,7 +126,7 @@ public class DeliveryManUseCase(
         }
         catch(Exception)
         {   
-            await transaction.RollbackAsync();
+            transaction.Rollback();
             throw;
         }
     }

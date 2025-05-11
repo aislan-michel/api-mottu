@@ -6,12 +6,12 @@ using Mottu.Api.Domain.Interfaces;
 
 namespace Mottu.Api.Application.Validators;
 
-public class PostDeliveryManRequestValidator : AbstractValidator<PostDeliveryManRequest>
+public class RegisterDeliveryManRequestValidator : AbstractValidator<RegisterDeliveryManRequest>
 {
     private readonly IRepository<DeliveryMan> _deliveryManRepository;
     private readonly string[] _validDriverLicenseTypes = [ "A", "B", "A+B" ];
 
-    public PostDeliveryManRequestValidator(
+    public RegisterDeliveryManRequestValidator(
         IRepository<DeliveryMan> deliveryManRepository)
     {
         _deliveryManRepository = deliveryManRepository;

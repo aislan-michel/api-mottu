@@ -11,88 +11,54 @@ namespace Mottu.Api.Controllers;
 [Produces("application/json")]
 [Authorize(Roles = "admin,entregador")]
 public class RentController(
-    IRentUseCase useCase,
-    ILogger<RentController> logger) : ApiControllerBase
+	IRentUseCase useCase,
+	ILogger<RentController> logger) : ControllerBase
 {
-    private readonly IRentUseCase _useCase = useCase;
-    private readonly ILogger<RentController> _logger = logger;
+	private readonly IRentUseCase _useCase = useCase;
+	private readonly ILogger<RentController> _logger = logger;
 
-    [HttpPost]
-    public IActionResult Post(PostRentRequest request)
-    {
-        try
+	[HttpPost]
+	public IActionResult Post(PostRentRequest request)
+	{
+		var result = _useCase.Create(request);
+
+		if (!result.Success)
 		{
-			var result = _useCase.Create(request);
-
-			if (!result.Success)
-			{
-				return BadRequest(result.GetMessages());
-			}
-
-			return Ok();
+			return BadRequest(result.GetMessages());
 		}
-		catch (Exception e)
+
+		return Ok();
+	}
+
+	[HttpGet("{id}")]
+	public IActionResult GetById([FromRoute] string id)
+	{
+		var result = _useCase.GetById(id);
+
+		if (!result.Success)
 		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
+			return NotFound();
 		}
-    }
 
-    [HttpGet("{id}")]
-    public IActionResult GetById([FromRoute] string id)
-    {
-        try
-		{
-			var result = _useCase.GetById(id);
-
-			if (!result.Success)
-			{
-				return NotFound();
-			}
-
-			return Ok(result.Data);
-		}
-		catch (Exception e)
-		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
-		}
-    }
+		return Ok(result.Data);
+	}
 
 	[HttpPatch("{id}/devolucao")]
-    public IActionResult Update([FromRoute] string id, [FromBody] PatchRentRequest request)
-    {
-        try
-		{
-			var result = _useCase.Update(id, request);
+	public IActionResult Update([FromRoute] string id, [FromBody] PatchRentRequest request)
+	{
+		var result = _useCase.Update(id, request);
 
-			if(!result.Success)
-			{
-				return BadRequest(result.GetMessages());
-			}
-
-			return Ok();
-		}
-		catch (Exception e)
+		if (!result.Success)
 		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
+			return BadRequest(result.GetMessages());
 		}
-    }
+
+		return Ok();
+	}
 
 	[HttpGet()]
-    public async Task<IActionResult> Get()
-    {
-        try
-		{
-			var rents = await _useCase.Get();
-
-			return Ok(rents);
-		}
-		catch (Exception e)
-		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
-		}
-    }
+	public async Task<IActionResult> Get()
+	{
+		return Ok(await _useCase.Get());
+	}
 }

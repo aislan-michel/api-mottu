@@ -12,7 +12,7 @@ namespace Mottu.Api.Controllers;
 [Route("api/usuarios")]
 [Produces("application/json")]
 [Authorize(Roles = "admin")]
-public class UsersController(UserManager<ApplicationUser> userManager) : ApiControllerBase
+public class UsersController(UserManager<ApplicationUser> userManager) : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 

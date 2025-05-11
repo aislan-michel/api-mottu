@@ -9,7 +9,9 @@ using Mottu.Api.Controllers;
 [Route("api/cadastro")]
 [Produces("application/json")]
 [AllowAnonymous]
-public class RegisterController(IAuthService authService, IDeliveryManUseCase deliveryManUseCase) : ApiControllerBase
+public class RegisterController(
+    IAuthService authService, 
+    IDeliveryManUseCase deliveryManUseCase) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
     private readonly IDeliveryManUseCase _deliveryManUseCase = deliveryManUseCase;

@@ -10,117 +10,77 @@ namespace Mottu.Api.Controllers;
 [Route("api/motos")]
 [Produces("application/json")]
 public class MotorcyclesController(
-    IMotorcycleUseCase useCase,
-    ILogger<MotorcyclesController> logger) : ApiControllerBase
+	IMotorcycleUseCase useCase,
+	ILogger<MotorcyclesController> logger) : ControllerBase
 {
 	private readonly IMotorcycleUseCase _useCase = useCase;
 	private readonly ILogger<MotorcyclesController> _logger = logger;
 
-    [HttpPost]
+	[HttpPost]
 	[Authorize(Roles = "admin")]
 	public IActionResult Post([FromBody] PostMotorcycleRequest request)
 	{
-		try
-		{
-			var result = _useCase.Create(request);
+		var result = _useCase.Create(request);
 
-			//todo: abstract this
-			if (!result.Success)
-			{
-				return BadRequest(result.GetMessages());
-			}
-
-			return Created();
-		}
-		catch (Exception e)
+		//todo: abstract this
+		if (!result.Success)
 		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
+			return BadRequest(result.GetMessages());
 		}
+
+		return Created();
 	}
 
 	[HttpGet]
 	[Authorize(Roles = "admin,entregador")]
 	public async Task<IActionResult> Get([FromQuery] GetMotorcyclesRequest request)
 	{
-		try
-		{
-			_logger.LogInformation("Iniciando busca de motos...");
+		_logger.LogInformation("Iniciando busca de motos...");
 
-			var motorcycles = await _useCase.Get(request.Plate);
+		var motorcycles = await _useCase.Get(request.Plate);
 
-			return Ok(motorcycles);
-		}
-		catch (Exception e)
-		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
-		}
+		return Ok(motorcycles);
 	}
 
 	[HttpGet("{id}")]
 	[Authorize(Roles = "admin,entregador")]
 	public IActionResult GetById([FromRoute] string id)
 	{
-		try
-		{
-			var motorcycle = _useCase.Get(id);
+		var motorcycle = _useCase.Get(id);
 
-			if(motorcycle == null)
-			{
-				return NotFound();
-			}
-
-			return Ok(motorcycle);
-		}
-		catch (Exception e)
+		if (motorcycle == null)
 		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
+			return NotFound();
 		}
+
+		return Ok(motorcycle);
 	}
 
 	[HttpPatch("{id}/placa")]
 	[Authorize(Roles = "admin")]
 	public IActionResult Patch([FromRoute] string id, [FromBody] PatchMotorcycleRequest request)
 	{
-		try
-		{
-			var result =_useCase.Update(id, request);
+		var result = _useCase.Update(id, request);
 
-			if (!result.Success)
-			{
-				return BadRequest(result.GetMessages());
-			}
-
-			return Ok();
-		}
-		catch (Exception e)
+		if (!result.Success)
 		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
+			return BadRequest(result.GetMessages());
 		}
+
+		return Ok();
 	}
 
 	[HttpDelete("{id}")]
 	[Authorize(Roles = "admin")]
 	public IActionResult Delete([FromRoute] string id)
 	{
-		try
-		{
-			var result = _useCase.Delete(id);
+		var result = _useCase.Delete(id);
 
-			if (!result.Success)
-			{
-				return BadRequest(result.GetMessages());
-			}
-
-			return Ok();
-		}
-		catch (Exception e)
+		if (!result.Success)
 		{
-			_logger.LogError("Ocorreu um erro inesperado, mensagem: {message}", e.Message);
-			return InternalServerError();
+			return BadRequest(result.GetMessages());
 		}
+
+		return Ok();
 	}
 }

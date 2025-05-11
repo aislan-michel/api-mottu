@@ -9,7 +9,7 @@ using Mottu.Api.Application.Interfaces;
 [Route("api/autenticar")]
 [Produces("application/json")]
 [AllowAnonymous]
-public class AuthController(IAuthService authService) : ApiControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
 
