@@ -8,8 +8,8 @@ public class DeliveryMan : BaseEntity
         
     }
 
-    public DeliveryMan(string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
-        DriverLicense driverLicense, string userId)
+    public DeliveryMan(string? name, string? companyRegistrationNumber, DateOnly dateOfBirth, 
+        DriverLicense driverLicense, string? userId)
     {
         Name = name;
         CompanyRegistrationNumber = companyRegistrationNumber;
@@ -18,12 +18,12 @@ public class DeliveryMan : BaseEntity
         UserId = userId;
     }
     
-    public string Name { get; private set; }
-    public string CompanyRegistrationNumber { get; private set; }
+    public string? Name { get; private set; }
+    public string? CompanyRegistrationNumber { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
-    public DriverLicense DriverLicense { get; private set; }
+    public DriverLicense DriverLicense { get; private set; } = new DriverLicense(default, default, default);
 
-    public string UserId { get; private set; }
+    public string? UserId { get; private set; }
 
     public string? RentId { get; set; }
     public Rent? Rent { get; set; }
@@ -36,15 +36,15 @@ public class DriverLicense
         
     }
 
-    public DriverLicense(string number, string type, string? imagePath)
+    public DriverLicense(string? number, string? type, string? imagePath)
     {
         Number = number;
         Type = type;
         ImagePath = imagePath;
     }
 
-    public string Number { get; private set; }
-    public string Type { get; private set; }
+    public string? Number { get; private set; }
+    public string? Type { get; private set; }
 
     /// <summary>
     /// path of image

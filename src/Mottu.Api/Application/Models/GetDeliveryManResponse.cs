@@ -5,7 +5,7 @@ namespace Mottu.Api.Application.Models;
 public class GetDeliveryManResponse
 {
     public GetDeliveryManResponse(
-        string id, string name, string companyRegistrationNumber, DateOnly dateOfBirth, 
+        string? id, string? name, string? companyRegistrationNumber, DateOnly dateOfBirth, 
         GetDriverLicenseResponse driverLicense)
     {
         Id = id;
@@ -16,13 +16,13 @@ public class GetDeliveryManResponse
     }
 
     [JsonPropertyName("identificador")]
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     [JsonPropertyName("nome")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [JsonPropertyName("cnpj")]
-    public string CompanyRegistrationNumber { get; set; }
+    public string? CompanyRegistrationNumber { get; set; }
 
     [JsonPropertyName("data_nascimento")]
     public DateOnly DateOfBirth { get; set; }
@@ -33,7 +33,7 @@ public class GetDeliveryManResponse
 
 public class GetDriverLicenseResponse
 {
-    public GetDriverLicenseResponse(string number, string type, string image)
+    public GetDriverLicenseResponse(string? number, string? type, string? image)
     {
         Number = number;
         Type = type;
@@ -41,11 +41,11 @@ public class GetDriverLicenseResponse
     }
 
     [JsonPropertyName("numero")]
-    public string Number { get; set; }
+    public string? Number { get; set; }
 
     [JsonPropertyName("tipo")]
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
     [JsonPropertyName("imagem")]
-    public string Image { get; set; }
+    public string? Image { get; set; }
 }

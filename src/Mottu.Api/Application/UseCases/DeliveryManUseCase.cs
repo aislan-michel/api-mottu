@@ -8,6 +8,7 @@ using Mottu.Api.Infrastructure.Identity;
 
 namespace Mottu.Api.Application.UseCases;
 
+//todo: separar use cases by case c:
 public class DeliveryManUseCase(
     IRepository<DeliveryMan> repository,
     IStorageService storageService,
@@ -35,9 +36,9 @@ public class DeliveryManUseCase(
         //todo: imagem da cnh não é obrigatório, mas, usuário ficara "inativado" até enviar
         //ou seja, não podera alugar uma moto
         string? driverLicenseImagePath = null;
-        if(!string.IsNullOrWhiteSpace(request.DriverLicenseImage))
+        if(!string.IsNullOrWhiteSpace(request.DriverLicenseImageBase64))
         {
-            driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
+            driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImageBase64);
         }
 
         var deliveryMan = new DeliveryMan(request.Name, request.CompanyRegistrationNumber, request.DateOfBirth,
@@ -100,7 +101,7 @@ public class DeliveryManUseCase(
 
             if(!registerUserResponse.Success)
             {
-                await transaction.RollbackAsync();
+                transaction.Rollback();
                 return Result<string>.Fail(registerUserResponse.GetMessages());
             }
 
@@ -110,20 +111,20 @@ public class DeliveryManUseCase(
                 CompanyRegistrationNumber = request.CompanyRegistrationNumber,
                 DateOfBirth = request.DateOfBirth,
                 DriverLicense = request.DriverLicense,
-                DriverLicenseImage = request.DriverLicenseImage,
+                DriverLicenseImageBase64 = request.DriverLicenseImage,
                 DriverLicenseType = request.DriverLicenseType
             }, registerUserResponse.Data.UserId);
 
             if(!postDeliveryManResponse.Success)
             {
-                await transaction.RollbackAsync();
+                transaction.Rollback();
                 return Result<string>.Fail(postDeliveryManResponse.GetMessages());
             }
 
-            await transaction.CommitAsync();
+            transaction.Commit();
             return Result<string>.Ok("sucesso");
         }
-        catch(Exception e)
+        catch(Exception)
         {   
             await transaction.RollbackAsync();
             throw;

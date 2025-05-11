@@ -24,16 +24,15 @@ public class PostDeliveryManRequestValidator : AbstractValidator<PostDeliveryMan
 
         RuleFor(x => x.DriverLicense)
             .Must(ExistsDriverLicense).WithMessage(x => $"Entregador com a CNH {x.DriverLicense} já cadastrado");
-
-        //todo: check if driver license image is in base64
     }
 
-    private bool BeAValidDriverLicenseType(string type) => 
+    private bool BeAValidDriverLicenseType(string? type) => 
         _validDriverLicenseTypes.Contains(type);
 
-    private bool ExistsCompanyRegistrationNumber(string companyRegistrationNumber) =>
+    private bool ExistsCompanyRegistrationNumber(string? companyRegistrationNumber) =>
         !_deliveryManRepository.Exists(x => x.CompanyRegistrationNumber == companyRegistrationNumber);
     
-    private bool ExistsDriverLicense(string driverLicense) =>
-        !_deliveryManRepository.Exists(x => x.DriverLicense.Number == driverLicense);
+    //todo: teste this in the insomnia
+    private bool ExistsDriverLicense(string? driverLicenseNumber) =>
+        !_deliveryManRepository.Exists(x => x.DriverLicense.Number == driverLicenseNumber);
 }
