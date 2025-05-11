@@ -8,6 +8,4 @@ public class LoginUserRequest
 
     [PasswordPropertyText]
     public string Password { get; set; }
-
-    public string Role { get; set; }
 }

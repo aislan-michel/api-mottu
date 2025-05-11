@@ -25,7 +25,7 @@ public class DeliveryMenController(
 
 		if (!result.Success)
 		{
-			return BadRequest(result.GetMessages());
+			return BadRequest(result);
 		}
 
 		return Ok();
@@ -39,7 +39,7 @@ public class DeliveryMenController(
 
 		if (!result.Success)
 		{
-			return BadRequest(result.GetMessages());
+			return BadRequest(result);
 		}
 
 		return Ok();

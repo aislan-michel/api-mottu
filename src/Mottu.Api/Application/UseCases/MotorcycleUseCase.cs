@@ -44,7 +44,6 @@ public class MotorcycleUseCase(
         return motorcycles.Select(x => new GetMotorcycleResponse(x.Id, x.Year, x.Model, x.Plate));
     }
 
-    //todo: create unit tests
     public GetMotorcycleResponse? GetById(string id)
     {
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);

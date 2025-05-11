@@ -24,7 +24,7 @@ public class RentController(
 
 		if (!result.Success)
 		{
-			return BadRequest(result.GetMessages());
+			return BadRequest(result);
 		}
 
 		return Ok();
@@ -50,7 +50,7 @@ public class RentController(
 
 		if (!result.Success)
 		{
-			return BadRequest(result.GetMessages());
+			return BadRequest(result);
 		}
 
 		return Ok();

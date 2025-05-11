@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Mottu.Api.Extensions;
 using Mottu.Api.Infrastructure.Identity;
 using Mottu.Api.Middlewares;
+using Mottu.Apis.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
 builder.Services.AddResponseCompression();
 builder.Services.AddOpenApi();

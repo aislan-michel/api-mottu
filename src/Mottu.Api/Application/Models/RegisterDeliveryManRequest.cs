@@ -40,7 +40,6 @@ public class RegisterDeliveryManRequest
     [JsonPropertyName("tipo_cnh")]
     public string? DriverLicenseType { get; set; }
 
-    [Required(AllowEmptyStrings = false, ErrorMessage = "Campo imagem da CNH é obrigatório")]
     [Base64String]
     [JsonPropertyName("imagem_cnh")]
     public string? DriverLicenseImageBase64 { get; set; }

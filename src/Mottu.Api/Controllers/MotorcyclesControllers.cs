@@ -25,7 +25,7 @@ public class MotorcyclesController(
 		//todo: abstract this
 		if (!result.Success)
 		{
-			return BadRequest(result.GetMessages());
+			return BadRequest(result);
 		}
 
 		return Created();
@@ -64,7 +64,7 @@ public class MotorcyclesController(
 
 		if (!result.Success)
 		{
-			return BadRequest(result.GetMessages());
+			return BadRequest(result);
 		}
 
 		return Ok();
@@ -78,7 +78,7 @@ public class MotorcyclesController(
 
 		if (!result.Success)
 		{
-			return BadRequest(result.GetMessages());
+			return BadRequest(result);
 		}
 
 		return Ok();

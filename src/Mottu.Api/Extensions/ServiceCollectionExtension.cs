@@ -84,8 +84,12 @@ public static class ServiceCollectionExtensions
 
     public static void AddValidators(this IServiceCollection services)
     {
+        services.AddValidatorsFromAssemblyContaining<PatchDriverLicenseImageRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<PatchMotorcycleRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<PatchRentRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<PostMotorcycleRequestValidator>();
         services.AddValidatorsFromAssemblyContaining<PostRentRequestValidator>();
-        services.AddValidatorsFromAssemblyContaining<PostDeliveryManRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<RegisterDeliveryManRequestValidator>();
     }
 
     public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)

@@ -17,7 +17,7 @@ public class RegisterController(
     private readonly IDeliveryManUseCase _deliveryManUseCase = deliveryManUseCase;
 
     [HttpPost("admin")]
-    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterUserRequest request)
+    public async Task<IActionResult> RegisterAdmin([FromBody] /*update the name for RegisterAdminRequest*/ RegisterUserRequest request)
     {
         request.Role = "admin";
 
@@ -25,12 +25,13 @@ public class RegisterController(
 
         if(!result.Success)
         {
-            return BadRequest(result.GetMessages());
+            return BadRequest(result);
         }
 
         return Created();
     }
 
+    //todo: move to delivery men controller?
     [HttpPost("entregador")]
     public async Task<IActionResult> RegisterDeliveryMan([FromBody] RegisterDeliveryManRequest request)
     {
@@ -38,7 +39,7 @@ public class RegisterController(
 
         if(!result.Success)
         {
-            return BadRequest(result.GetMessages());
+            return BadRequest(result);
         }
 
         return Created();

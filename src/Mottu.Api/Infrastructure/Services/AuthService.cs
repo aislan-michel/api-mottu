@@ -10,7 +10,7 @@ using Mottu.Api.Domain.Entities;
 namespace Mottu.Api.Infrastructure.Services;
 
 public class AuthService(
-    UserManager<ApplicationUser> userManager, 
+    UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
     ITokenService tokenService,
     ILogger<AuthService> logger,
@@ -57,20 +57,16 @@ public class AuthService(
         _logger.LogInformation("roles found... roles: {roles}", string.Join(", ", roles));
 
         string token;
-        if(request.Role == Roles.Entregador)
+        var deliveryMan = _deliveryManRepository.GetFirst(x => x.UserId == user.Id);
+        if (deliveryMan == null)
         {
-            var deliveryMan = _deliveryManRepository.GetFirst(x => x.UserId == user.Id);
-
-            if(deliveryMan == null)
-            {
-                return Result<string>.Fail("Entregador não encontrado");
-            }
-
+            token = _tokenService.GenerateToken(user, null, roles);
+        }
+        else
+        {
             token = _tokenService.GenerateToken(user, deliveryMan.Id, roles);
-            return Result<string>.Ok(token);
         }
 
-        token = _tokenService.GenerateToken(user, null, roles);
         return Result<string>.Ok(token);
     }
 }
