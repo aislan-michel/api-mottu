@@ -41,13 +41,13 @@ public class MotorcyclesController(
 
 	[HttpGet]
 	[Authorize(Roles = "admin,entregador")]
-	public IActionResult Get([FromQuery] GetMotorcyclesRequest request)
+	public async Task<IActionResult> Get([FromQuery] GetMotorcyclesRequest request)
 	{
 		try
 		{
 			_logger.LogInformation("Iniciando busca de motos...");
 
-			var motorcycles = _useCase.Get(request.Plate);
+			var motorcycles = await _useCase.Get(request.Plate);
 
 			return Ok(motorcycles);
 		}

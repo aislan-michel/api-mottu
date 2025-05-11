@@ -11,7 +11,7 @@ using Mottu.Api.Infrastructure.Identity;
 namespace Mottu.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250507234525_InitialSetup")]
+    [Migration("20250511202801_InitialSetup")]
     partial class InitialSetup
     {
         /// <inheritdoc />
@@ -182,15 +182,27 @@ namespace Mottu.Api.Infrastructure.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("name");
 
+                    b.Property<string>("RentId")
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("rent_id");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime")
                         .HasColumnName("update_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id");
 
-                    b.ToTable("deliveryMen", (string)null);
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("delivery_men", (string)null);
                 });
 
             modelBuilder.Entity("Mottu.Api.Domain.Entities.Motorcycle", b =>
@@ -220,6 +232,10 @@ namespace Mottu.Api.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(7)")
                         .HasColumnName("plate");
+
+                    b.Property<string>("RentId")
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("rent_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnUpdate()
@@ -293,9 +309,11 @@ namespace Mottu.Api.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeliveryManId");
+                    b.HasIndex("DeliveryManId")
+                        .IsUnique();
 
-                    b.HasIndex("MotorcycleId");
+                    b.HasIndex("MotorcycleId")
+                        .IsUnique();
 
                     b.ToTable("rents", (string)null);
                 });
@@ -417,13 +435,18 @@ namespace Mottu.Api.Infrastructure.Migrations
 
             modelBuilder.Entity("Mottu.Api.Domain.Entities.DeliveryMan", b =>
                 {
+                    b.HasOne("Mottu.Api.Infrastructure.Identity.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("Mottu.Api.Domain.Entities.DeliveryMan", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("Mottu.Api.Domain.Entities.DriverLicense", "DriverLicense", b1 =>
                         {
                             b1.Property<string>("DeliveryManId")
                                 .HasColumnType("varchar(255)");
 
                             b1.Property<string>("ImagePath")
-                                .IsRequired()
                                 .HasColumnType("varchar(255)")
                                 .HasColumnName("driver_license_image_path");
 
@@ -439,7 +462,7 @@ namespace Mottu.Api.Infrastructure.Migrations
 
                             b1.HasKey("DeliveryManId");
 
-                            b1.ToTable("deliveryMen");
+                            b1.ToTable("delivery_men");
 
                             b1.WithOwner()
                                 .HasForeignKey("DeliveryManId");
@@ -452,14 +475,14 @@ namespace Mottu.Api.Infrastructure.Migrations
             modelBuilder.Entity("Mottu.Api.Domain.Entities.Rent", b =>
                 {
                     b.HasOne("Mottu.Api.Domain.Entities.DeliveryMan", "DeliveryMan")
-                        .WithMany()
-                        .HasForeignKey("DeliveryManId")
+                        .WithOne("Rent")
+                        .HasForeignKey("Mottu.Api.Domain.Entities.Rent", "DeliveryManId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Mottu.Api.Domain.Entities.Motorcycle", "Motorcycle")
-                        .WithMany()
-                        .HasForeignKey("MotorcycleId")
+                        .WithOne("Rent")
+                        .HasForeignKey("Mottu.Api.Domain.Entities.Rent", "MotorcycleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -491,6 +514,16 @@ namespace Mottu.Api.Infrastructure.Migrations
 
                     b.Navigation("Plan")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Mottu.Api.Domain.Entities.DeliveryMan", b =>
+                {
+                    b.Navigation("Rent");
+                });
+
+            modelBuilder.Entity("Mottu.Api.Domain.Entities.Motorcycle", b =>
+                {
+                    b.Navigation("Rent");
                 });
 #pragma warning restore 612, 618
         }

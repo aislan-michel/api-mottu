@@ -1,0 +1,1 @@
+dotnet ef migrations remove --project src/Mottu.Api/Mottu.Api.csproj --startup-project src/Mottu.Api/Mottu.Api.csproj

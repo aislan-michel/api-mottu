@@ -63,11 +63,11 @@ public class DeliveryMenController(
 
 	[HttpGet]
 	[Authorize(Roles = "admin")]
-	public IActionResult Get()
+	public async Task<IActionResult> Get()
 	{
 		try
 		{
-			var deliveryMen = _useCase.Get();
+			var deliveryMen = await _useCase.Get();
 
 			return Ok(deliveryMen);
 		}

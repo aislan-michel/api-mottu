@@ -59,7 +59,6 @@ public class DeliveryManUseCase(
 
         var deliveryMan = _repository.GetFirst(x => x.Id == id);
 
-        //todo: add unit test
         if(deliveryMan == null)
         {
             return Result<string>.Fail($"Entregador de id {id} não encontrado");
@@ -76,9 +75,9 @@ public class DeliveryManUseCase(
         return Result<string>.Ok(string.Empty);
     }
 
-    public IEnumerable<GetDeliveryManResponse> Get()
+    public async Task<IEnumerable<GetDeliveryManResponse>> Get()
     {
-        var deliveryMen = _repository.GetCollection();
+        var deliveryMen = await _repository.GetCollection();
 
         return deliveryMen.Select(x => new GetDeliveryManResponse(x.Id, x.Name, x.CompanyRegistrationNumber, x.DateOfBirth,
             new GetDriverLicenseResponse(x.DriverLicense.Number, x.DriverLicense.Type, x.DriverLicense.ImagePath)));
@@ -86,6 +85,7 @@ public class DeliveryManUseCase(
 
     public async Task<Result<string>> Register(RegisterDeliveryManRequest request)
     {
+        //refactor, add UnitOfWork pattern
         var transaction = await _appDbContext.Database.BeginTransactionAsync();
 
         try

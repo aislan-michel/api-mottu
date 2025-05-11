@@ -12,11 +12,24 @@ public class RentConfiguration : EntityTypeConfigurationBase<Rent>
         base.Configure(builder);
 
         builder.Property(x => x.DeliveryManId).IsRequired().HasColumnName("delivery_man_id").HasColumnType("varchar(255)");
+        builder
+          .HasOne(x => x.DeliveryMan)
+          .WithOne(x => x.Rent)
+          .HasForeignKey<Rent>(x => x.DeliveryManId)
+          .IsRequired()
+          .OnDelete(DeleteBehavior.Cascade);
+
         builder.Property(x => x.MotorcycleId).IsRequired().HasColumnName("motorcycle_id").HasColumnType("varchar(255)");
-        
+        builder
+          .HasOne(x => x.Motorcycle)
+          .WithOne(x => x.Rent)
+          .HasForeignKey<Rent>(x => x.MotorcycleId)
+          .IsRequired()
+          .OnDelete(DeleteBehavior.Cascade);
+
         builder.Property(x => x.StartDate).IsRequired().HasColumnName("start_date").HasColumnType("datetime");
-        builder.Property(x => x.EndDate).IsRequired().HasColumnName("end_date").HasColumnType("datetime");;
-        builder.Property(x => x.ExpectedEndDate).IsRequired().HasColumnName("expected_end_date").HasColumnType("datetime");;
+        builder.Property(x => x.EndDate).IsRequired().HasColumnName("end_date").HasColumnType("datetime"); ;
+        builder.Property(x => x.ExpectedEndDate).IsRequired().HasColumnName("expected_end_date").HasColumnType("datetime"); ;
 
         builder.OwnsOne(x => x.Plan, y =>
         {

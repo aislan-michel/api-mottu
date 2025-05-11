@@ -70,33 +70,6 @@ namespace Mottu.Api.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "deliveryMen",
-                columns: table => new
-                {
-                    id = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    company_registration_number = table.Column<string>(type: "varchar(14)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    date_of_birth = table.Column<DateOnly>(type: "date", nullable: false),
-                    driver_license_number = table.Column<string>(type: "varchar(11)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    driver_license_type = table.Column<string>(type: "char(1)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    driver_license_image_path = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    update_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    active = table.Column<bool>(type: "TINYINT(1)", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_deliveryMen", x => x.id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "motorcycles",
                 columns: table => new
                 {
@@ -107,6 +80,8 @@ namespace Mottu.Api.Infrastructure.Migrations
                     model = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     plate = table.Column<string>(type: "varchar(7)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    rent_id = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     update_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -246,6 +221,43 @@ namespace Mottu.Api.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "delivery_men",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    name = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    company_registration_number = table.Column<string>(type: "varchar(14)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    date_of_birth = table.Column<DateOnly>(type: "date", nullable: false),
+                    driver_license_number = table.Column<string>(type: "varchar(11)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    driver_license_type = table.Column<string>(type: "char(1)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    driver_license_image_path = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    user_id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    rent_id = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    update_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    active = table.Column<bool>(type: "TINYINT(1)", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_delivery_men", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_delivery_men_AspNetUsers_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "rents",
                 columns: table => new
                 {
@@ -271,9 +283,9 @@ namespace Mottu.Api.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_rents", x => x.id);
                     table.ForeignKey(
-                        name: "FK_rents_deliveryMen_delivery_man_id",
+                        name: "FK_rents_delivery_men_delivery_man_id",
                         column: x => x.delivery_man_id,
-                        principalTable: "deliveryMen",
+                        principalTable: "delivery_men",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -323,14 +335,22 @@ namespace Mottu.Api.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_delivery_men_user_id",
+                table: "delivery_men",
+                column: "user_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_rents_delivery_man_id",
                 table: "rents",
-                column: "delivery_man_id");
+                column: "delivery_man_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_rents_motorcycle_id",
                 table: "rents",
-                column: "motorcycle_id");
+                column: "motorcycle_id",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -358,13 +378,13 @@ namespace Mottu.Api.Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "deliveryMen");
+                name: "delivery_men");
 
             migrationBuilder.DropTable(
                 name: "motorcycles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

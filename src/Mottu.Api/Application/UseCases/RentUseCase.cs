@@ -104,14 +104,15 @@ public class RentUseCase(
         return Result<string>.Ok(string.Empty);
     }
 
-    public IEnumerable<GetRentResponse> Get()
+    public async Task<IEnumerable<GetRentResponse>> Get()
     {
         var deliveryManId = _loggedUserService.DeliveryManId;
 
-        return _rentRepository.GetCollection(x => x.DeliveryManId == deliveryManId)
-            .Select(rent => new GetRentResponse(
+        var rents = await _rentRepository.GetCollection(x => x.DeliveryManId == deliveryManId);
+
+        return rents.Select(rent => new GetRentResponse(
                 rent.Id, rent.Plan.DailyRate,
-                rent.DeliveryMan.Id, rent.Motorcycle.Id, 
+                rent.DeliveryManId, rent.MotorcycleId, 
                 rent.StartDate, rent.EndDate, rent.ExpectedEndDate,
                 rent.ReturnDate, rent.TotalAmountPayable));
     }

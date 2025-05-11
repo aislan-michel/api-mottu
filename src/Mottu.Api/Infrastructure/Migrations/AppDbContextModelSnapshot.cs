@@ -179,6 +179,10 @@ namespace Mottu.Api.Infrastructure.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("name");
 
+                    b.Property<string>("RentId")
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("rent_id");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime")
@@ -225,6 +229,10 @@ namespace Mottu.Api.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(7)")
                         .HasColumnName("plate");
+
+                    b.Property<string>("RentId")
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("rent_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnUpdate()
@@ -298,9 +306,11 @@ namespace Mottu.Api.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeliveryManId");
+                    b.HasIndex("DeliveryManId")
+                        .IsUnique();
 
-                    b.HasIndex("MotorcycleId");
+                    b.HasIndex("MotorcycleId")
+                        .IsUnique();
 
                     b.ToTable("rents", (string)null);
                 });
@@ -462,14 +472,14 @@ namespace Mottu.Api.Infrastructure.Migrations
             modelBuilder.Entity("Mottu.Api.Domain.Entities.Rent", b =>
                 {
                     b.HasOne("Mottu.Api.Domain.Entities.DeliveryMan", "DeliveryMan")
-                        .WithMany()
-                        .HasForeignKey("DeliveryManId")
+                        .WithOne("Rent")
+                        .HasForeignKey("Mottu.Api.Domain.Entities.Rent", "DeliveryManId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Mottu.Api.Domain.Entities.Motorcycle", "Motorcycle")
-                        .WithMany()
-                        .HasForeignKey("MotorcycleId")
+                        .WithOne("Rent")
+                        .HasForeignKey("Mottu.Api.Domain.Entities.Rent", "MotorcycleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -501,6 +511,16 @@ namespace Mottu.Api.Infrastructure.Migrations
 
                     b.Navigation("Plan")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Mottu.Api.Domain.Entities.DeliveryMan", b =>
+                {
+                    b.Navigation("Rent");
+                });
+
+            modelBuilder.Entity("Mottu.Api.Domain.Entities.Motorcycle", b =>
+                {
+                    b.Navigation("Rent");
                 });
 #pragma warning restore 612, 618
         }

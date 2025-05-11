@@ -81,11 +81,11 @@ public class RentController(
     }
 
 	[HttpGet()]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
         try
 		{
-			var rents = _useCase.Get();
+			var rents = await _useCase.Get();
 
 			return Ok(rents);
 		}

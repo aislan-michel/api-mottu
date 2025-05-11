@@ -24,13 +24,19 @@ public class DeliveryManConfiguration : EntityTypeConfigurationBase<DeliveryMan>
         });
 
         builder.Property(x => x.UserId).IsRequired().HasColumnName("user_id");
-
         builder
           .HasOne<ApplicationUser>()
           .WithOne()
           .HasForeignKey<DeliveryMan>(x => x.UserId)
           .IsRequired()
           .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(x => x.RentId).HasColumnName("rent_id").HasColumnType("varchar(255)");
+        builder
+            .HasOne(x => x.Rent)
+            .WithOne(x => x.DeliveryMan)
+            .HasForeignKey<DeliveryMan>(x => x.RentId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.ToTable("delivery_men");
     }

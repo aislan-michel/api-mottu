@@ -36,11 +36,12 @@ public class MotorcycleUseCase(
         return Result<string>.Ok(string.Empty);
     }
 
-    public IEnumerable<GetMotorcycleResponse> Get(string? plate)
+    public async Task<IEnumerable<GetMotorcycleResponse>> Get(string? plate)
     {
-        return _motorcycleRepository
-            .GetCollection(string.IsNullOrWhiteSpace(plate) ? null : x => x.Plate == plate)
-            .Select(x => new GetMotorcycleResponse(x.Id, x.Year, x.Model, x.Plate));
+        var motorcycles = await _motorcycleRepository
+            .GetCollection(string.IsNullOrWhiteSpace(plate) ? null : x => x.Plate == plate);
+
+        return motorcycles.Select(x => new GetMotorcycleResponse(x.Id, x.Year, x.Model, x.Plate));
     }
 
     //todo: create unit tests
@@ -48,7 +49,7 @@ public class MotorcycleUseCase(
     {
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
-        if(motorcycle == null)
+        if (motorcycle == null)
         {
             return default;
         }
@@ -60,7 +61,7 @@ public class MotorcycleUseCase(
     {
         var validationResult = _patchMotorcycleRequestValidator.Validate(request);
 
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
@@ -83,14 +84,14 @@ public class MotorcycleUseCase(
     {
         var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
 
-        if(motorcycle == null)
+        if (motorcycle == null)
         {
             return Result<string>.Fail("Moto não encontrada");
         }
 
         var rent = _rentRepository.GetFirst(x => x.Motorcycle.Id == id);
 
-        if(rent != null)
+        if (rent != null)
         {
             return Result<string>.Fail($"Moto possui registro de locação, id da locação: {rent.Id}");
         }

@@ -24,6 +24,9 @@ public class DeliveryMan : BaseEntity
     public DriverLicense DriverLicense { get; private set; }
 
     public string UserId { get; private set; }
+
+    public string? RentId { get; set; }
+    public Rent? Rent { get; set; }
 }
 
 public class DriverLicense

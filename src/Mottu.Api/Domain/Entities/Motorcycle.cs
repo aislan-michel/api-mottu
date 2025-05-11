@@ -19,6 +19,9 @@ public class Motorcycle : BaseEntity
 	public string? Model { get; private set; }
 	public string? Plate { get; private set; }
 
+    public string? RentId { get; private set; }
+    public Rent? Rent { get; private set; }
+
     public void UpdatePlate(string? plate)
     {
         if(string.IsNullOrWhiteSpace(plate))

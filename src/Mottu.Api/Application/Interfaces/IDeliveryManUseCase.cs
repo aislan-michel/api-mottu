@@ -6,6 +6,6 @@ public interface IDeliveryManUseCase
 {
     Result<string> Create(PostDeliveryManRequest request, string userId);
     Result<string> Update(string id, PatchDriverLicenseImageRequest request);
-    IEnumerable<GetDeliveryManResponse> Get();
+    Task<IEnumerable<GetDeliveryManResponse>> Get();
     Task<Result<string>> Register(RegisterDeliveryManRequest request);
 }

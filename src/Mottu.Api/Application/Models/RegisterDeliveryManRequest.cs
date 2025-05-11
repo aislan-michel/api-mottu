@@ -16,7 +16,6 @@ public class RegisterDeliveryManRequest
     public string Password { get; set; }
 
     [JsonPropertyName("nome")]
-    //[DefaultValue("João da Silva")]
     public string Name { get; set; }
 
     [JsonPropertyName("cnpj")]

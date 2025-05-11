@@ -23,11 +23,11 @@ public class Repository<T>(AppDbContext context) : IRepository<T> where T : clas
         return _dbSet.FirstOrDefault(whereCondition);
     }
 
-    public IEnumerable<T> GetCollection(Expression<Func<T, bool>>? whereCondition = null)
+    public async Task<IEnumerable<T>> GetCollection(Expression<Func<T, bool>>? whereCondition = null)
     {
         return whereCondition == null
-            ? _dbSet.ToList()
-            : _dbSet.Where(whereCondition).ToList();
+            ? await _dbSet.ToListAsync()
+            : await _dbSet.Where(whereCondition).ToListAsync();
     }
 
     public void Create(T entity)
