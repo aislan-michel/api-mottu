@@ -4,7 +4,7 @@ namespace Mottu.Api.Application.Interfaces;
 
 public interface IDeliveryManUseCase
 {
-    Result<string> Update(string id, PatchDriverLicenseImageRequest request);
+    Task<Result<string>> Update(string id, PatchDriverLicenseImageRequest request);
     Task<IEnumerable<GetDeliveryManResponse>> Get();
     Task<Result<string>> Register(RegisterDeliveryManRequest request);
 }

@@ -24,9 +24,9 @@ public class DeliveryMenController(IDeliveryManUseCase useCase) : ControllerBase
 
 	[HttpPatch("{id}/cnh")]
 	[Authorize(Roles = "entregador")]
-	public IActionResult Patch([FromRoute] string id, [FromBody] PatchDriverLicenseImageRequest request)
+	public async Task<IActionResult> Patch([FromRoute] string id, [FromBody] PatchDriverLicenseImageRequest request)
 	{
-		var result = _useCase.Update(id, request);
+		var result = await _useCase.Update(id, request);
 
 		return result.Success ? Ok() : BadRequest(result);
 	}

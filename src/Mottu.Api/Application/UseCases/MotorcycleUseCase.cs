@@ -18,7 +18,7 @@ public class MotorcycleUseCase(
     private readonly IValidator<PostMotorcycleRequest> _postMotorcycleRequestValidator = postMotorcycleRequestValidator;
     private readonly IValidator<PatchMotorcycleRequest> _patchMotorcycleRequestValidator = patchMotorcycleRequestValidator;
 
-    public Result<string> Create(PostMotorcycleRequest request)
+    public async Task<Result<string>> Create(PostMotorcycleRequest request)
     {
         var validationResult = _postMotorcycleRequestValidator.Validate(request);
 
@@ -29,7 +29,7 @@ public class MotorcycleUseCase(
 
         var motorcycle = new Motorcycle(request.Year, request.Model, request.Plate);
 
-        _motorcycleRepository.Create(motorcycle);
+        await _motorcycleRepository.Create(motorcycle);
 
         //todo: produces event
 
@@ -44,9 +44,9 @@ public class MotorcycleUseCase(
         return motorcycles.Select(x => new GetMotorcycleResponse(x.Id, x.Year, x.Model, x.Plate));
     }
 
-    public GetMotorcycleResponse? GetById(string id)
+    public async Task<GetMotorcycleResponse?> GetById(string id)
     {
-        var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
+        var motorcycle = await _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if (motorcycle == null)
         {
@@ -56,7 +56,7 @@ public class MotorcycleUseCase(
         return new GetMotorcycleResponse(motorcycle.Id, motorcycle.Year, motorcycle.Model, motorcycle.Plate);
     }
 
-    public Result<string> Update(string id, PatchMotorcycleRequest request)
+    public async Task<Result<string>> Update(string id, PatchMotorcycleRequest request)
     {
         var validationResult = _patchMotorcycleRequestValidator.Validate(request);
 
@@ -65,7 +65,7 @@ public class MotorcycleUseCase(
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
-        var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
+        var motorcycle = await _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if (motorcycle == null)
         {
@@ -74,14 +74,14 @@ public class MotorcycleUseCase(
 
         motorcycle.UpdatePlate(request.Plate);
 
-        _motorcycleRepository.Update(motorcycle);
+        await _motorcycleRepository.Update(motorcycle);
 
         return Result<string>.Ok(string.Empty);
     }
 
-    public Result<string> Delete(string id)
+    public async Task<Result<string>> Delete(string id)
     {
-        var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == id);
+        var motorcycle = await _motorcycleRepository.GetFirst(x => x.Id == id);
 
         if (motorcycle == null)
         {
@@ -95,7 +95,7 @@ public class MotorcycleUseCase(
             return Result<string>.Fail($"Moto possui registro de locação, id da locação: {rent.Id}");
         }
 
-        _motorcycleRepository.Delete(motorcycle);
+        await _motorcycleRepository.Delete(motorcycle);
 
         return Result<string>.Ok(string.Empty);
     }

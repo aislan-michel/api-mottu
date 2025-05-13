@@ -5,9 +5,9 @@ namespace Mottu.Api.Application.Interfaces;
 
 public interface IMotorcycleUseCase
 {
-    Result<string> Create(PostMotorcycleRequest request);
+    Task<Result<string>> Create(PostMotorcycleRequest request);
     Task<IEnumerable<GetMotorcycleResponse>> Get(string? plate);
-    GetMotorcycleResponse? GetById(string id);
-    Result<string> Update(string id, PatchMotorcycleRequest request);
-    Result<string> Delete(string id);
+    Task<GetMotorcycleResponse?> GetById(string id);
+    Task<Result<string>> Update(string id, PatchMotorcycleRequest request);
+    Task<Result<string>> Delete(string id);
 }

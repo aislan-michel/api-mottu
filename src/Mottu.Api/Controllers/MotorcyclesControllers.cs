@@ -18,9 +18,9 @@ public class MotorcyclesController(
 
 	[HttpPost]
 	[Authorize(Roles = "admin")]
-	public IActionResult Post([FromBody] PostMotorcycleRequest request)
+	public async Task<IActionResult> Post([FromBody] PostMotorcycleRequest request)
 	{
-		var result = _useCase.Create(request);
+		var result = await _useCase.Create(request);
 
 		return result.Success ? Created() : BadRequest(result);
 	}
@@ -36,27 +36,27 @@ public class MotorcyclesController(
 
 	[HttpGet("{id}")]
 	[Authorize(Roles = "admin,entregador")]
-	public IActionResult GetById([FromRoute] string id)
+	public async Task<IActionResult> GetById([FromRoute] string id)
 	{
-		var motorcycle = _useCase.Get(id);
+		var motorcycle = await _useCase.Get(id);
 
         return motorcycle == null ? NotFound() : Ok(motorcycle);
     }
 
     [HttpPatch("{id}/placa")]
 	[Authorize(Roles = "admin")]
-	public IActionResult Patch([FromRoute] string id, [FromBody] PatchMotorcycleRequest request)
+	public async Task<IActionResult> Patch([FromRoute] string id, [FromBody] PatchMotorcycleRequest request)
 	{
-		var result = _useCase.Update(id, request);
+		var result = await _useCase.Update(id, request);
 
 		return result.Success ? Ok() : BadRequest(result);
 	}
 
 	[HttpDelete("{id}")]
 	[Authorize(Roles = "admin")]
-	public IActionResult Delete([FromRoute] string id)
+	public async Task<IActionResult> Delete([FromRoute] string id)
 	{
-		var result = _useCase.Delete(id);
+		var result = await _useCase.Delete(id);
 
 		return result.Success ? Ok() : BadRequest(result);
 	}

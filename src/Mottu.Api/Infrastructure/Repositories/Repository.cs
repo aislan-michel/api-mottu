@@ -10,17 +10,19 @@ public class Repository<T>(AppDbContext context) : IRepository<T> where T : clas
     private readonly AppDbContext _context = context;
     private readonly DbSet<T> _dbSet = context.Set<T>();
 
-    public bool Exists(Expression<Func<T, bool>> condition)
+    public async Task<bool> Exists(Expression<Func<T, bool>> condition)
     {
-        return _dbSet.Any(condition);
+        return await _dbSet.AnyAsync(condition);
     }
 
-    public T? GetFirst(Expression<Func<T, bool>> whereCondition)
+    public async Task<T?> GetFirst(Expression<Func<T, bool>> whereCondition)
     {
         if (whereCondition == null)
+        {
             throw new ArgumentNullException(nameof(whereCondition));
+        }
 
-        return _dbSet.FirstOrDefault(whereCondition);
+        return await _dbSet.FirstOrDefaultAsync(whereCondition);
     }
 
     public async Task<IEnumerable<T>> GetCollection(Expression<Func<T, bool>>? whereCondition = null)
@@ -30,21 +32,21 @@ public class Repository<T>(AppDbContext context) : IRepository<T> where T : clas
             : await _dbSet.Where(whereCondition).ToListAsync();
     }
 
-    public void Create(T entity)
+    public async Task Create(T entity)
     {
         _dbSet.Add(entity);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(T entity)
+    public async Task Update(T entity)
     {
         _dbSet.Update(entity);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(T entity)
+    public async Task Delete(T entity)
     {
         _dbSet.Remove(entity);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

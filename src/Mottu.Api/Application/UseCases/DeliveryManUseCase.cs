@@ -24,7 +24,7 @@ public class DeliveryManUseCase(
     private readonly IAuthService _authService = authService;
     private readonly AppDbContext _appDbContext = appDbContext;
 
-    private void Create(PostDeliveryManRequest request, string userId)
+    private async Task Create(PostDeliveryManRequest request, string userId)
     {
         //todo: imagem da cnh não é obrigatório, mas, usuário ficara "inativado" até enviar
         //ou seja, não podera alugar uma moto
@@ -37,10 +37,10 @@ public class DeliveryManUseCase(
         var deliveryMan = new DeliveryMan(request.Name, request.CompanyRegistrationNumber, request.DateOfBirth,
             new DriverLicense(request.DriverLicense, request.DriverLicenseType, driverLicenseImagePath), userId);
 
-        _repository.Create(deliveryMan);
+        await _repository.Create(deliveryMan);
     }
 
-    public Result<string> Update(string id, PatchDriverLicenseImageRequest request)
+    public async Task<Result<string>> Update(string id, PatchDriverLicenseImageRequest request)
     {
         var validationResult = _patchDriverLicenseImageRequestValidator.Validate(request);
 
@@ -49,20 +49,23 @@ public class DeliveryManUseCase(
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
-        var deliveryMan = _repository.GetFirst(x => x.Id == id);
+        var deliveryMan = await _repository.GetFirst(x => x.Id == id);
 
         if(deliveryMan == null)
         {
             return Result<string>.Fail($"Entregador de id {id} não encontrado");
         }
 
-        _storageService.DeleteImage(deliveryMan.DriverLicense.ImagePath);
+        if(!string.IsNullOrWhiteSpace(deliveryMan.DriverLicense.ImagePath))
+        {
+            _storageService.DeleteImage(deliveryMan.DriverLicense.ImagePath);
+        }
 
         var driverLicenseImagePath = _storageService.SaveBase64Image(request.DriverLicenseImage);
 
         deliveryMan.DriverLicense.UpdateImagePath(driverLicenseImagePath);
 
-        _repository.Update(deliveryMan);
+        await _repository.Update(deliveryMan);
 
         return Result<string>.Ok(string.Empty);
     }
@@ -103,7 +106,7 @@ public class DeliveryManUseCase(
                 return Result<string>.Fail(registerUserResult.GetMessages());
             }
 
-            Create(new PostDeliveryManRequest()
+            await Create(new PostDeliveryManRequest()
             {
                 Name = request.Name,
                 CompanyRegistrationNumber = request.CompanyRegistrationNumber,

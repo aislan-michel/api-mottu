@@ -25,7 +25,7 @@ public class RentUseCase(
     private readonly ILogger<RentUseCase> _logger = logger;
     private readonly ILoggedUserService _loggedUserService = loggedUserService;
 
-    public Result<string> Create(PostRentRequest request)
+    public async Task<Result<string>> Create(PostRentRequest request)
     {
         var validationResult = _postRentRequestValidator.Validate(request);
 
@@ -36,7 +36,7 @@ public class RentUseCase(
 
         var deliveryManId = _loggedUserService.DeliveryManId;
 
-        var deliveryMan = _deliveryManRepository.GetFirst(x => x.Id == deliveryManId);
+        var deliveryMan = await _deliveryManRepository.GetFirst(x => x.Id == deliveryManId);
 
         if(deliveryMan == null)
         {
@@ -48,7 +48,7 @@ public class RentUseCase(
             return Result<string>.Fail("Tipo da CNH do entregador é diferente de A");
         }
 
-        var motorcycle = _motorcycleRepository.GetFirst(x => x.Id == request.MotorcycleId);
+        var motorcycle = await _motorcycleRepository.GetFirst(x => x.Id == request.MotorcycleId);
 
         if(motorcycle == null)
         {
@@ -59,14 +59,14 @@ public class RentUseCase(
         
         _logger.LogInformation("create a rent... rent: {rent}", JsonSerializer.Serialize(rent));
 
-        _rentRepository.Create(rent);
+        await _rentRepository.Create(rent);
 
         return Result<string>.Ok(string.Empty);
     }
 
-    public Result<GetRentResponse?> GetById(string id)
+    public async Task<Result<GetRentResponse?>> GetById(string id)
     {
-        var rent = _rentRepository.GetFirst(x => x.Id == x.Id);
+        var rent = await _rentRepository.GetFirst(x => x.Id == x.Id);
 
         if(rent == null)
         {
@@ -80,7 +80,7 @@ public class RentUseCase(
             rent.ReturnDate, rent.TotalAmountPayable));
     }
 
-    public Result<string> Update(string id, PatchRentRequest request)
+    public async Task<Result<string>> Update(string id, PatchRentRequest request)
     {
         var validationResult = _patchRentRequestValidator.Validate(request);
 
@@ -89,7 +89,7 @@ public class RentUseCase(
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
-        var rent = _rentRepository.GetFirst(x => x.Id == id);
+        var rent = await _rentRepository.GetFirst(x => x.Id == id);
 
         if(rent == null)
         {
@@ -99,7 +99,7 @@ public class RentUseCase(
         rent.UpdateReturnDate(request.ReturnDate);
         rent.SetTotalAmountPayable();
 
-        _rentRepository.Update(rent);
+        await _rentRepository.Update(rent);
 
         return Result<string>.Ok(string.Empty);
     }
