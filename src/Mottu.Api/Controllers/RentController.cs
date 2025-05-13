@@ -22,12 +22,7 @@ public class RentController(
 	{
 		var result = _useCase.Create(request);
 
-		if (!result.Success)
-		{
-			return BadRequest(result);
-		}
-
-		return Ok();
+		return result.Success ? Ok() : BadRequest(result);
 	}
 
 	[HttpGet("{id}")]
@@ -35,12 +30,7 @@ public class RentController(
 	{
 		var result = _useCase.GetById(id);
 
-		if (!result.Success)
-		{
-			return NotFound();
-		}
-
-		return Ok(result.Data);
+		return result.Success ? Ok(result.Data) : NotFound();
 	}
 
 	[HttpPatch("{id}/devolucao")]
@@ -48,12 +38,7 @@ public class RentController(
 	{
 		var result = _useCase.Update(id, request);
 
-		if (!result.Success)
-		{
-			return BadRequest(result);
-		}
-
-		return Ok();
+		return result.Success ? Ok() : BadRequest(result);
 	}
 
 	[HttpGet()]

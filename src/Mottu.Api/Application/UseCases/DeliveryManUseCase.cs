@@ -89,7 +89,7 @@ public class DeliveryManUseCase(
 
         try
         {
-            var registerUserResponse = await _authService.Register(new RegisterUserRequest()
+            var registerUserResult = await _authService.Register(new RegisterUserRequest()
             {
                 Email = request.Email,
                 Password = request.Password,
@@ -97,10 +97,10 @@ public class DeliveryManUseCase(
                 Username = request.Username
             });
 
-            if(!registerUserResponse.Success)
+            if(!registerUserResult.Success)
             {
                 transaction.Rollback();
-                return Result<string>.Fail(registerUserResponse.GetMessages());
+                return Result<string>.Fail(registerUserResult.GetMessages());
             }
 
             Create(new PostDeliveryManRequest()
@@ -111,7 +111,7 @@ public class DeliveryManUseCase(
                 DriverLicense = request.DriverLicense,
                 DriverLicenseImageBase64 = request.DriverLicenseImageBase64,
                 DriverLicenseType = request.DriverLicenseType
-            }, registerUserResponse.Data.UserId);
+            }, registerUserResult.Data.UserId);
 
             transaction.Commit();
             return Result<string>.Ok("sucesso");

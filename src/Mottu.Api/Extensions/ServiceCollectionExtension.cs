@@ -1,5 +1,3 @@
-
-
 using System.Reflection;
 using System.Text;
 
@@ -80,6 +78,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
         services.AddScoped<IDeliveryManUseCase, DeliveryManUseCase>();
         services.AddScoped<IRentUseCase, RentUseCase>();
+        services.AddScoped<IAdminUseCase, AdminUseCase>();
     }
 
     public static void AddValidators(this IServiceCollection services)
@@ -115,16 +114,6 @@ public static class ServiceCollectionExtensions
                 ValidAudience = issuer,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
             };
-
-            /*options.Events = new JwtBearerEvents
-            {
-                OnAuthenticationFailed = async (context) =>
-                {
-                },
-                OnChallenge = async (context) =>
-                {
-                }
-            };*/
         });
 
         services.AddScoped<ITokenService, TokenService>();

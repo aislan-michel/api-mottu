@@ -9,26 +9,17 @@ namespace Mottu.Api.Controllers;
 [ApiController]
 [Route("api/entregadores")]
 [Produces("application/json")]
-public class DeliveryMenController(
-	IDeliveryManUseCase useCase,
-	ILogger<DeliveryMenController> logger) : ControllerBase
+public class DeliveryMenController(IDeliveryManUseCase useCase) : ControllerBase
 {
 	private readonly IDeliveryManUseCase _useCase = useCase;
-	private readonly ILogger<DeliveryMenController> _logger = logger;
 
 	[HttpPost]
 	[Authorize(Roles = "admin")]
 	public async Task<IActionResult> Post([FromBody] RegisterDeliveryManRequest request)
 	{
-		//todo: fix this null param
 		var result = await _useCase.Register(request);
 
-		if (!result.Success)
-		{
-			return BadRequest(result);
-		}
-
-		return Ok();
+		return result.Success ? Ok() : BadRequest(result);
 	}
 
 	[HttpPatch("{id}/cnh")]
@@ -37,12 +28,7 @@ public class DeliveryMenController(
 	{
 		var result = _useCase.Update(id, request);
 
-		if (!result.Success)
-		{
-			return BadRequest(result);
-		}
-
-		return Ok();
+		return result.Success ? Ok() : BadRequest(result);
 	}
 
 	[HttpGet]

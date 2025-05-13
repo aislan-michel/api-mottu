@@ -22,13 +22,7 @@ public class MotorcyclesController(
 	{
 		var result = _useCase.Create(request);
 
-		//todo: abstract this
-		if (!result.Success)
-		{
-			return BadRequest(result);
-		}
-
-		return Created();
+		return result.Success ? Created() : BadRequest(result);
 	}
 
 	[HttpGet]
@@ -37,9 +31,7 @@ public class MotorcyclesController(
 	{
 		_logger.LogInformation("Iniciando busca de motos...");
 
-		var motorcycles = await _useCase.Get(request.Plate);
-
-		return Ok(motorcycles);
+		return Ok(await _useCase.Get(request.Plate));
 	}
 
 	[HttpGet("{id}")]
@@ -48,26 +40,16 @@ public class MotorcyclesController(
 	{
 		var motorcycle = _useCase.Get(id);
 
-		if (motorcycle == null)
-		{
-			return NotFound();
-		}
+        return motorcycle == null ? NotFound() : Ok(motorcycle);
+    }
 
-		return Ok(motorcycle);
-	}
-
-	[HttpPatch("{id}/placa")]
+    [HttpPatch("{id}/placa")]
 	[Authorize(Roles = "admin")]
 	public IActionResult Patch([FromRoute] string id, [FromBody] PatchMotorcycleRequest request)
 	{
 		var result = _useCase.Update(id, request);
 
-		if (!result.Success)
-		{
-			return BadRequest(result);
-		}
-
-		return Ok();
+		return result.Success ? Ok() : BadRequest(result);
 	}
 
 	[HttpDelete("{id}")]
@@ -76,11 +58,6 @@ public class MotorcyclesController(
 	{
 		var result = _useCase.Delete(id);
 
-		if (!result.Success)
-		{
-			return BadRequest(result);
-		}
-
-		return Ok();
+		return result.Success ? Ok() : BadRequest(result);
 	}
 }

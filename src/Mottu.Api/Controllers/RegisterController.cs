@@ -3,45 +3,31 @@ using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
 using Mottu.Api.Application.Interfaces;
-using Mottu.Api.Controllers;
 
 [ApiController]
 [Route("api/cadastro")]
 [Produces("application/json")]
 [AllowAnonymous]
 public class RegisterController(
-    IAuthService authService, 
+    IAdminUseCase adminUseCase, 
     IDeliveryManUseCase deliveryManUseCase) : ControllerBase
 {
-    private readonly IAuthService _authService = authService;
+    private readonly IAdminUseCase _adminUseCase = adminUseCase;
     private readonly IDeliveryManUseCase _deliveryManUseCase = deliveryManUseCase;
 
     [HttpPost("admin")]
-    public async Task<IActionResult> RegisterAdmin([FromBody] /*update the name for RegisterAdminRequest*/ RegisterUserRequest request)
+    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterAdminRequest request)
     {
-        request.Role = "admin";
+        var result = await _adminUseCase.Register(request);
 
-        var result = await _authService.Register(request);
-
-        if(!result.Success)
-        {
-            return BadRequest(result);
-        }
-
-        return Created();
+        return result.Success ? Created() : BadRequest(result);
     }
 
-    //todo: move to delivery men controller?
     [HttpPost("entregador")]
     public async Task<IActionResult> RegisterDeliveryMan([FromBody] RegisterDeliveryManRequest request)
     {
         var result = await _deliveryManUseCase.Register(request);
 
-        if(!result.Success)
-        {
-            return BadRequest(result);
-        }
-
-        return Created();
+        return result.Success ? Created() : BadRequest(result);
     }
 }

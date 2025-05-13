@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Mottu.Api.Application.Models;
-using Mottu.Api.Controllers;
 using Mottu.Api.Application.Interfaces;
 
 [ApiController]
@@ -18,11 +17,6 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var result = await _authService.Login(request);
 
-        if(!result.Success)
-        {
-            return BadRequest(result);
-        }
-
-        return Ok(new { token = result.Data });
+        return result.Success ? Ok(result) : BadRequest(result);
     }
 }
