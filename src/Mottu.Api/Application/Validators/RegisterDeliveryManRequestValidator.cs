@@ -20,19 +20,19 @@ public class RegisterDeliveryManRequestValidator : AbstractValidator<RegisterDel
             .Must(BeAValidDriverLicenseType).WithMessage($"Tipo da CNH inválida, tipos válidos são: {string.Join(", ", _validDriverLicenseTypes)}");
 
         RuleFor(x => x.CompanyRegistrationNumber)
-            .Must(ExistsCompanyRegistrationNumber).WithMessage(x => $"Entregador com a CNPJ {x.CompanyRegistrationNumber} já cadastrado");
+            .MustAsync((x, cancellationToken) => ExistsCompanyRegistrationNumber(x)).WithMessage(x => $"Entregador com a CNPJ {x.CompanyRegistrationNumber} já cadastrado");
 
         RuleFor(x => x.DriverLicense)
-            .Must(ExistsDriverLicense).WithMessage(x => $"Entregador com a CNH {x.DriverLicense} já cadastrado");
+            .MustAsync((x, cancellationToken) => ExistsDriverLicense(x)).WithMessage(x => $"Entregador com a CNH {x.DriverLicense} já cadastrado");
     }
 
     private bool BeAValidDriverLicenseType(string? type) => 
         _validDriverLicenseTypes.Contains(type);
 
-    private bool ExistsCompanyRegistrationNumber(string? companyRegistrationNumber) =>
-        !_deliveryManRepository.Exists(x => x.CompanyRegistrationNumber == companyRegistrationNumber);
+    private async Task<bool> ExistsCompanyRegistrationNumber(string? companyRegistrationNumber) =>
+        !await _deliveryManRepository.Exists(x => x.CompanyRegistrationNumber == companyRegistrationNumber);
     
     //todo: teste this in the insomnia
-    private bool ExistsDriverLicense(string? driverLicenseNumber) =>
-        !_deliveryManRepository.Exists(x => x.DriverLicense.Number == driverLicenseNumber);
+    private async Task<bool> ExistsDriverLicense(string? driverLicenseNumber) =>
+        !await _deliveryManRepository.Exists(x => x.DriverLicense.Number == driverLicenseNumber);
 }

@@ -5,10 +5,10 @@ public class DeliveryMan : BaseEntity
     //for rf
     protected DeliveryMan()
     {
-        
+
     }
 
-    public DeliveryMan(string? name, string? companyRegistrationNumber, DateOnly dateOfBirth, 
+    public DeliveryMan(string? name, string? companyRegistrationNumber, DateOnly dateOfBirth,
         DriverLicense driverLicense, string? userId)
     {
         Name = name;
@@ -17,7 +17,7 @@ public class DeliveryMan : BaseEntity
         DriverLicense = driverLicense;
         UserId = userId;
     }
-    
+
     public string? Name { get; private set; }
     public string? CompanyRegistrationNumber { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
@@ -27,6 +27,11 @@ public class DeliveryMan : BaseEntity
 
     public string? RentId { get; set; }
     public Rent? Rent { get; set; }
+    
+    public void UpdateRentId(string rentId)
+    {
+        RentId = rentId;
+    }
 }
 
 public class DriverLicense

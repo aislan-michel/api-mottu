@@ -22,6 +22,6 @@ public class AdminUseCase(IAuthService authService) : IAdminUseCase
             return Result<RegisterAdminResponse>.Fail(result.GetMessages());
         }
 
-        return Result<RegisterAdminResponse>.Ok(new RegisterAdminResponse(result.Data.UserId));
+        return Result<RegisterAdminResponse>.Ok(new RegisterAdminResponse(result.Data!.UserId));
     }
 }

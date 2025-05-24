@@ -8,7 +8,7 @@ public class RegisterUserRequest
 {
     [Required(AllowEmptyStrings = false, ErrorMessage = "Campo username é obrigatório")]
     [JsonPropertyName("username")]
-    public string? Username { get; set; }
+    public required string? Username { get; set; }
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Campo e-mail é obrigatório")]
     [EmailAddress]

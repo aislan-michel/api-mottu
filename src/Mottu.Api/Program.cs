@@ -8,15 +8,12 @@ using Mottu.Apis.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder =>
+builder.Services.AddCors(options => options.AddPolicy("AllowAll", builder =>
     {
         builder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader();
-    });
-});
+    }));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -35,11 +32,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddResponseCompression();
 builder.Services.AddOpenApi();
 
-builder.Services.AddSwagger();
-builder.Services.AddValidators();
-builder.Services.AddInfrastructure();
-builder.Services.AddUseCases();
-builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddServices(builder.Configuration);
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();

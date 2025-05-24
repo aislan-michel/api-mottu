@@ -19,10 +19,20 @@ namespace Mottu.Api.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddSwagger(this IServiceCollection services)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        return services
+            .AddSwagger()
+            .AddInfrastructure()
+            .AddUseCases()
+            .AddValidators()
+            .AddAuthentication(configuration);
+    }
+
+    private static IServiceCollection AddSwagger(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options => 
+        services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo
             {
@@ -64,24 +74,34 @@ public static class ServiceCollectionExtensions
                 }
             });
         });
+
+        return services;
     }
 
-    public static void AddInfrastructure(this IServiceCollection services)
+    private static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IStorageService, StorageService>();
+
+        services.AddScoped<IUserManager, Infrastructure.Identity.UserManager>();
+        services.AddScoped<ISignInManager, Infrastructure.Identity.SignInManager>();
+
+        return services;
     }
 
-    public static void AddUseCases(this IServiceCollection services)
+    private static IServiceCollection AddUseCases(this IServiceCollection services)
     {
         services.AddScoped<IMotorcycleUseCase, MotorcycleUseCase>();
         services.AddScoped<IDeliveryManUseCase, DeliveryManUseCase>();
         services.AddScoped<IRentUseCase, RentUseCase>();
         services.AddScoped<IAdminUseCase, AdminUseCase>();
+
+        return services;
     }
 
-    public static void AddValidators(this IServiceCollection services)
+    private static IServiceCollection AddValidators(this IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<PatchDriverLicenseImageRequestValidator>();
         services.AddValidatorsFromAssemblyContaining<PatchMotorcycleRequestValidator>();
@@ -89,9 +109,11 @@ public static class ServiceCollectionExtensions
         services.AddValidatorsFromAssemblyContaining<PostMotorcycleRequestValidator>();
         services.AddValidatorsFromAssemblyContaining<PostRentRequestValidator>();
         services.AddValidatorsFromAssemblyContaining<RegisterDeliveryManRequestValidator>();
+
+        return services;
     }
 
-    public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         var key = configuration["Jwt:Key"];
         var issuer = configuration["Jwt:Issuer"];
@@ -101,7 +123,7 @@ public static class ServiceCollectionExtensions
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(options => 
+        .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -119,6 +141,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ILoggedUserService, LoggedUserService>();
+        
+        return services;
     }
 }
 

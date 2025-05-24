@@ -8,22 +8,20 @@ public class Rent : BaseEntity
         
     }
 
-    public Rent(DeliveryMan deliveryMan, Motorcycle motorcycle, Plan plan)
+    public Rent(string deliveryManId, string motorcycleId, Plan plan)
     {
-        DeliveryMan = deliveryMan;
-        DeliveryManId = deliveryMan.Id;
-        Motorcycle = motorcycle;
-        MotorcycleId = motorcycle.Id;
+        DeliveryManId = deliveryManId;
+        MotorcycleId = motorcycleId;
         Plan = plan;
         
         SetDates();
     }
 
     public string DeliveryManId { get; private set; }
-    public DeliveryMan DeliveryMan { get; private set; }
+    public DeliveryMan? DeliveryMan { get; private set; }
 
     public string MotorcycleId { get; private set; }
-    public Motorcycle Motorcycle { get; private set; }
+    public Motorcycle? Motorcycle { get; private set; }
 
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }

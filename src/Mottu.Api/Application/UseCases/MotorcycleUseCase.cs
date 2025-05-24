@@ -88,7 +88,7 @@ public class MotorcycleUseCase(
             return Result<string>.Fail("Moto não encontrada");
         }
 
-        var rent = _rentRepository.GetFirst(x => x.Motorcycle.Id == id);
+        var rent = _rentRepository.GetFirst(x => x.MotorcycleId == id);
 
         if (rent != null)
         {
