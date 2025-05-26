@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-using Mottu.Api.Application.Interfaces;
+using Mottu.Api.Infrastructure.Interfaces;
 using Mottu.Api.Application.Models;
 
 namespace Mottu.Api.Infrastructure.Identity;

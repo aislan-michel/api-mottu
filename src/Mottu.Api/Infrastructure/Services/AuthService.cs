@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-
 using Mottu.Api.Application.Models;
 using Mottu.Api.Infrastructure.Identity;
 using Mottu.Api.Application.Interfaces;
@@ -55,15 +53,20 @@ public class AuthService(
         var resultCheckPassword = await _signInManager.CheckPasswordSignIn(user, request.Password!);
         if (!resultCheckPassword.Success)
         {
-            return Result<string>.Fail("usuário não encontrado");
+            return Result<string>.Fail("senha inválida");
         }
 
         var roles = await _userManager.GetRoles(user);
 
-        _logger.LogInformation("roles found... roles: {roles}", string.Join(", ", roles));
+        _logger.LogInformation("roles found... roles: {roles}", string.Join(", ", roles!));
 
         var deliveryMan = await _deliveryManRepository.GetFirst(x => x.UserId == user.Id);
-        var token = _tokenService.GenerateToken(user, deliveryMan?.Id, roles);
+        if (deliveryMan != null && !deliveryMan.Active)
+        {
+            return Result<string>.Fail($"usuário não está ativo");
+        }
+
+        var token = _tokenService.GenerateToken(user, deliveryMan?.Id, roles!);
 
         return Result<string>.Ok(token);
     }

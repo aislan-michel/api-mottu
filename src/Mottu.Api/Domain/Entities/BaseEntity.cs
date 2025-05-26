@@ -23,4 +23,14 @@ public abstract class BaseEntity
     {
         UpdatedAt = dateTime;
     }
+
+    protected void Inactive()
+    {
+        Active = false;
+    }
+
+    protected void Activate()
+    {
+        Active = true;
+    }
 }

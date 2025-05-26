@@ -20,7 +20,7 @@ public class MotorcycleUseCase(
 
     public async Task<Result<string>> Create(PostMotorcycleRequest request)
     {
-        var validationResult = _postMotorcycleRequestValidator.Validate(request);
+        var validationResult = await _postMotorcycleRequestValidator.ValidateAsync(request);
 
         if (!validationResult.IsValid)
         {

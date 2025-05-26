@@ -25,7 +25,7 @@ public class DeliveryManUseCase(
     {
         var validationResult = await _registerDeliveryManRequestValidator.ValidateAsync(request);
 
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
@@ -41,7 +41,7 @@ public class DeliveryManUseCase(
                 Username = request.Username
             });
 
-            if(!registerUserResult.Success)
+            if (!registerUserResult.Success)
             {
                 await _unitOfWork.RollbackTransaction();
                 return Result<string>.Fail(registerUserResult.GetMessages());
@@ -60,7 +60,7 @@ public class DeliveryManUseCase(
             await _unitOfWork.CommitTransaction();
             return Result<string>.Ok("sucesso");
         }
-        catch(Exception)
+        catch (Exception)
         {
             await _unitOfWork.RollbackTransaction();
             throw;
@@ -69,8 +69,6 @@ public class DeliveryManUseCase(
 
     private async Task Create(PostDeliveryManRequest request, string userId)
     {
-        //todo: imagem da cnh não é obrigatório, mas, usuário ficara "inativado" até enviar
-        //ou seja, não podera alugar uma moto
         string? driverLicenseImagePath = null;
         if (!string.IsNullOrWhiteSpace(request.DriverLicenseImageBase64))
         {
@@ -87,19 +85,19 @@ public class DeliveryManUseCase(
     {
         var validationResult = _patchDriverLicenseImageRequestValidator.Validate(request);
 
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
             return Result<string>.Fail(validationResult.GetErrorMessages());
         }
 
         var deliveryMan = await _unitOfWork.DeliveryMen.GetFirst(x => x.Id == id);
 
-        if(deliveryMan == null)
+        if (deliveryMan == null)
         {
             return Result<string>.Fail($"Entregador de id {id} não encontrado");
         }
 
-        if(!string.IsNullOrWhiteSpace(deliveryMan.DriverLicense.ImagePath))
+        if (!string.IsNullOrWhiteSpace(deliveryMan.DriverLicense.ImagePath))
         {
             _storageService.DeleteImage(deliveryMan.DriverLicense.ImagePath);
         }

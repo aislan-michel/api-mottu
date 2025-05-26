@@ -4,5 +4,13 @@ namespace Mottu.Api.Infrastructure.Identity;
 
 public class ApplicationUser : IdentityUser
 {
+    protected ApplicationUser()
+    {
+
+    }
     
+    public ApplicationUser(string username) : base(username) 
+    {
+        
+    }
 }

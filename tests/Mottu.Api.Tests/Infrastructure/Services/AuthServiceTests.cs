@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-
+using System.Linq.Expressions;
 using Moq;
 
 using Mottu.Api.Application.Interfaces;
@@ -10,6 +9,8 @@ using Mottu.Api.Domain.Interfaces;
 using Mottu.Api.Infrastructure.Identity;
 using Mottu.Api.Infrastructure.Interfaces;
 using Mottu.Api.Infrastructure.Services;
+
+using Mottu.Api.Tests.Factories;
 
 namespace Mottu.Api.Tests.Infrastructure.Services;
 
@@ -59,5 +60,39 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
         Assert.NotNull(result.Data.UserId);
         Assert.NotEmpty(result.Data.UserId);
+    }
+
+    [Fact]
+    public async Task Login_ShouldResultFail_WhenDeliveryManIsInactive()
+    {
+        var request = new LoginUserRequest()
+        {
+            Username = "user.test",
+            Password = "Test@123",
+        };
+
+        _userManagerMock.Setup(x => x.FindByName(request.Username!))
+            .ReturnsAsync(Result<ApplicationUser>.Ok(ApplicationUserFactory.ApplicationUser("user.test")));
+
+        _signInManagerMock.Setup(x => x.CheckPasswordSignIn(It.IsAny<ApplicationUser>(), request.Password!))
+            .ReturnsAsync(Result<string>.Ok(string.Empty));
+
+        _userManagerMock.Setup(x => x.GetRoles(It.IsAny<ApplicationUser>()))
+            .ReturnsAsync(["entregador"]);
+
+        _deliveryManRepositoryMock.Setup(x => x.GetFirst(It.IsAny<Expression<Func<DeliveryMan, bool>>>()))
+            .ReturnsAsync(DeliveryManFactory.DeliveryManWithoutDriverLicenseImage());
+
+        var result = await _authService.Login(request);
+
+        Assert.NotNull(result);
+        Assert.False(result.Success);
+        Assert.Single(result.Messages);
+        Assert.Contains("usuário não está ativo", result.Messages.First());
+
+        _userManagerMock.Verify(x => x.FindByName(request.Username), Times.Once);
+        _signInManagerMock.Verify(x => x.CheckPasswordSignIn(It.IsAny<ApplicationUser>(), request.Password!), Times.Once);
+        _userManagerMock.Verify(x => x.GetRoles(It.IsAny<ApplicationUser>()), Times.Once);
+        _deliveryManRepositoryMock.Verify(x => x.GetFirst(It.IsAny<Expression<Func<DeliveryMan, bool>>>()), Times.Once);
     }
 }

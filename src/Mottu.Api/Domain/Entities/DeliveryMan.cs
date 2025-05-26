@@ -16,6 +16,11 @@ public class DeliveryMan : BaseEntity
         DateOfBirth = dateOfBirth;
         DriverLicense = driverLicense;
         UserId = userId;
+
+        if (string.IsNullOrWhiteSpace(driverLicense.ImagePath))
+        {
+            Inactive();
+        }
     }
 
     public string? Name { get; private set; }
@@ -27,7 +32,7 @@ public class DeliveryMan : BaseEntity
 
     public string? RentId { get; set; }
     public Rent? Rent { get; set; }
-    
+
     public void UpdateRentId(string rentId)
     {
         RentId = rentId;
@@ -38,7 +43,7 @@ public class DriverLicense
 {
     protected DriverLicense()
     {
-        
+
     }
 
     public DriverLicense(string? number, string? type, string? imagePath)
@@ -58,7 +63,7 @@ public class DriverLicense
 
     public void UpdateImagePath(string imagePath)
     {
-        if(string.IsNullOrWhiteSpace(imagePath))
+        if (string.IsNullOrWhiteSpace(imagePath))
         {
             throw new ArgumentNullException(nameof(imagePath), "Imagem da CNH não pode ser nulo ou vazio");
         }

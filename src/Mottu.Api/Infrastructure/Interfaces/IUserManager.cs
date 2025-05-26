@@ -1,7 +1,7 @@
 using Mottu.Api.Application.Models;
 using Mottu.Api.Infrastructure.Identity;
 
-namespace Mottu.Api.Application.Interfaces;
+namespace Mottu.Api.Infrastructure.Interfaces;
 
 public interface IUserManager
 {
