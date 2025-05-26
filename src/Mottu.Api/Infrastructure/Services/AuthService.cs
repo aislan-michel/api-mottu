@@ -23,7 +23,7 @@ public class AuthService(
     public async Task<Result<RegisterUserResponse>> Register(RegisterUserRequest request)
     {
         //todo: maybe need validate de request or use dtos for params
-        var user = new ApplicationUser { UserName = request.Username, Email = request.Email };
+        var user = new ApplicationUser(request.Username, request.Email);
         var result = await _userManager.Create(user, request.Password);
         if (!result.Success)
         {

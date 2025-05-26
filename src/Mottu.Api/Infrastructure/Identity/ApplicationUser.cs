@@ -8,9 +8,15 @@ public class ApplicationUser : IdentityUser
     {
 
     }
-    
-    public ApplicationUser(string username) : base(username) 
+
+    public ApplicationUser(string username, string email)
     {
-        
+        UserName = username;
+        Email = email;
+    }
+
+    public ApplicationUser(string username) : base(username)
+    {
+
     }
 }

@@ -7,10 +7,10 @@ namespace Mottu.Api.Tests.Domain.Application
         public void Create_ShouldInactive_WhenDriverLicenseImageIsNull()
         {
             var deliveryMan = new DeliveryMan(
-            "Fulano da Silva", "09556767000176",
-            new DateOnly(1999, 12, 28),
-            new DriverLicense("12227462477", "A", null),
-            Guid.NewGuid().ToString()
+                "Fulano da Silva", "09556767000176",
+                new DateOnly(1999, 12, 28),
+                new DriverLicense("12227462477", "A", null),
+                Guid.NewGuid().ToString()
             );
 
             Assert.False(deliveryMan.Active);
