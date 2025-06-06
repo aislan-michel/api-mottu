@@ -20,6 +20,8 @@ public class AuthService(
     private readonly ILogger<AuthService> _logger = logger;
     private readonly IRepository<DeliveryMan> _deliveryManRepository = deliveryManRepository;
 
+    //todo: maybe, add transaction
+    //need to test if useManager uses a transaction behind
     public async Task<Result<RegisterUserResponse>> Register(RegisterUserRequest request)
     {
         //todo: maybe need validate de request or use dtos for params

@@ -27,6 +27,8 @@ public class UnitOfWork(
 
     public IRepository<Rent> Rents => _rentRepository;
 
+    public IDbContextTransaction? Transaction => _transaction;
+
     public async Task BeginTransaction()
     {
         if (_transaction == null)
